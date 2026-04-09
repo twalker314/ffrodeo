@@ -42,6 +42,7 @@
 #include "libavutil/avassert.h"
 #include "libavutil/avstring.h"
 #include "libavutil/avutil.h"
+#include "libavutil/channel_layout.h"
 #include "libavutil/mathematics.h"
 #include "libavutil/mem.h"
 #include "libavutil/opt.h"
@@ -1421,11 +1422,129 @@ void show_help_default(const char *opt, const char *arg)
     }
 }
 
+
+static const struct
+{
+    uint64_t layout;
+    const char *name;
+}
+channel_layout_map[] =
+{
+    { (uint64_t)0x007ff,                "wav_to_side_right",                },
+    { (uint64_t)0x3ffff,                "all_wave_channels",                },
+    { AV_CH_LAYOUT_MONO,                "AV_CH_LAYOUT_MONO",                },
+    { AV_CH_LAYOUT_STEREO,              "AV_CH_LAYOUT_STEREO",              },
+    { AV_CH_LAYOUT_2POINT1,             "AV_CH_LAYOUT_2POINT1",             },
+    { AV_CH_LAYOUT_2_1,                 "AV_CH_LAYOUT_2_1",                 },
+    { AV_CH_LAYOUT_SURROUND,            "AV_CH_LAYOUT_SURROUND",            },
+    { AV_CH_LAYOUT_3POINT1,             "AV_CH_LAYOUT_3POINT1",             },
+    { AV_CH_LAYOUT_4POINT0,             "AV_CH_LAYOUT_4POINT0",             },
+    { AV_CH_LAYOUT_4POINT1,             "AV_CH_LAYOUT_4POINT1",             },
+    { AV_CH_LAYOUT_2_2,                 "AV_CH_LAYOUT_2_2",                 },
+    { AV_CH_LAYOUT_QUAD,                "AV_CH_LAYOUT_QUAD",                },
+    { AV_CH_LAYOUT_5POINT0,             "AV_CH_LAYOUT_5POINT0",             },
+    { AV_CH_LAYOUT_5POINT1,             "AV_CH_LAYOUT_5POINT1",             },
+    { AV_CH_LAYOUT_5POINT0_BACK,        "AV_CH_LAYOUT_5POINT0_BACK",        },
+    { AV_CH_LAYOUT_5POINT1_BACK,        "AV_CH_LAYOUT_5POINT1_BACK",        },
+    { AV_CH_LAYOUT_6POINT0,             "AV_CH_LAYOUT_6POINT0",             },
+    { AV_CH_LAYOUT_6POINT0_FRONT,       "AV_CH_LAYOUT_6POINT0_FRONT",       },
+    { AV_CH_LAYOUT_HEXAGONAL,           "AV_CH_LAYOUT_HEXAGONAL",           },
+    { AV_CH_LAYOUT_3POINT1POINT2,       "AV_CH_LAYOUT_3POINT1POINT2",       },
+    { AV_CH_LAYOUT_6POINT1,             "AV_CH_LAYOUT_6POINT1",             },
+    { AV_CH_LAYOUT_6POINT1_BACK,        "AV_CH_LAYOUT_6POINT1_BACK",        },
+    { AV_CH_LAYOUT_6POINT1_FRONT,       "AV_CH_LAYOUT_6POINT1_FRONT",       },
+    { AV_CH_LAYOUT_7POINT0,             "AV_CH_LAYOUT_7POINT0",             },
+    { AV_CH_LAYOUT_7POINT0_FRONT,       "AV_CH_LAYOUT_7POINT0_FRONT",       },
+    { AV_CH_LAYOUT_7POINT1,             "AV_CH_LAYOUT_7POINT1",             },
+    { AV_CH_LAYOUT_7POINT1_WIDE,        "AV_CH_LAYOUT_7POINT1_WIDE",        },
+    { AV_CH_LAYOUT_7POINT1_WIDE_BACK,   "AV_CH_LAYOUT_7POINT1_WIDE_BACK",   },
+    { AV_CH_LAYOUT_5POINT1POINT2,       "AV_CH_LAYOUT_5POINT1POINT2",       },
+    { AV_CH_LAYOUT_5POINT1POINT2_BACK,  "AV_CH_LAYOUT_5POINT1POINT2_BACK",  },
+    { AV_CH_LAYOUT_7POINT1_TOP_BACK,    "AV_CH_LAYOUT_7POINT1_TOP_BACK",    },
+    { AV_CH_LAYOUT_OCTAGONAL,           "AV_CH_LAYOUT_OCTAGONAL",           },
+    { AV_CH_LAYOUT_CUBE,                "AV_CH_LAYOUT_CUBE",                },
+    { AV_CH_LAYOUT_5POINT1POINT4_BACK,  "AV_CH_LAYOUT_5POINT1POINT4_BACK",  },
+    { AV_CH_LAYOUT_7POINT1POINT2,       "AV_CH_LAYOUT_7POINT1POINT2",       },
+    { AV_CH_LAYOUT_7POINT1POINT4_BACK,  "AV_CH_LAYOUT_7POINT1POINT4_BACK",  },
+    { AV_CH_LAYOUT_7POINT2POINT3,       "AV_CH_LAYOUT_7POINT2POINT3",       },
+    { AV_CH_LAYOUT_9POINT1POINT4_BACK,  "AV_CH_LAYOUT_9POINT1POINT4_BACK",  },
+    { AV_CH_LAYOUT_9POINT1POINT6,       "AV_CH_LAYOUT_9POINT1POINT6",       },
+    { AV_CH_LAYOUT_HEXADECAGONAL,       "AV_CH_LAYOUT_HEXADECAGONAL",       },
+    { AV_CH_LAYOUT_BINAURAL,            "AV_CH_LAYOUT_BINAURAL",            },
+    { AV_CH_LAYOUT_STEREO_DOWNMIX,      "AV_CH_LAYOUT_STEREO_DOWNMIX",      },
+    { AV_CH_LAYOUT_22POINT2,            "AV_CH_LAYOUT_22POINT2",            },
+    { 0,                                NULL,                               },
+};
+
+// show_usage_avchann
 void show_usage(void)
 {
-    av_log(NULL, AV_LOG_INFO, "Universal media converter\n");
-    av_log(NULL, AV_LOG_INFO, "usage: %s [options] [[infile options] -i infile]... {[outfile options] outfile}...\n", program_name);
-    av_log(NULL, AV_LOG_INFO, "\n");
+    uint64_t wav_to_side_right =
+        AV_CH_FRONT_LEFT|
+        AV_CH_FRONT_RIGHT|
+        AV_CH_FRONT_CENTER|
+        AV_CH_LOW_FREQUENCY|
+        AV_CH_BACK_LEFT|
+        AV_CH_BACK_RIGHT|
+        AV_CH_FRONT_LEFT_OF_CENTER|
+        AV_CH_FRONT_RIGHT_OF_CENTER|
+        AV_CH_BACK_CENTER|
+        AV_CH_SIDE_LEFT|
+        AV_CH_SIDE_RIGHT;
+    uint64_t all_wave_channels =
+        wav_to_side_right|
+        AV_CH_TOP_CENTER|
+        AV_CH_TOP_FRONT_LEFT|
+        AV_CH_TOP_FRONT_CENTER|
+        AV_CH_TOP_FRONT_RIGHT|
+        AV_CH_TOP_BACK_LEFT|
+        AV_CH_TOP_BACK_CENTER|
+        AV_CH_TOP_BACK_RIGHT;
+    av_assert0(channel_layout_map[0].layout == wav_to_side_right);
+    av_assert0(channel_layout_map[1].layout == all_wave_channels);
+    for (int i = 0; channel_layout_map[i].name; i++)
+    {
+        char buf[4];
+        if ((channel_layout_map[i].layout & all_wave_channels) != channel_layout_map[i].layout)
+        {
+            printf("%-35s%#018"PRIx64"%-8s", channel_layout_map[i].name, channel_layout_map[i].layout, "");
+            for (int j = 0, k = 0; j <= 62; j++)
+            {
+                if (channel_layout_map[i].layout & (1ULL << j))
+                {
+                    av_channel_name(buf, sizeof(buf), j);
+                    printf("%.*s%s", k, ", ", buf);
+                    k = 2;
+                }
+            }
+            printf("\n");
+        }
+        else
+        {
+            printf("%#07"PRIx64"    %-35s", channel_layout_map[i].layout, channel_layout_map[i].name);
+            for (int j = 0, k = 0; j < 18; j++)
+            {
+                if (channel_layout_map[i].layout & (1ULL << j))
+                {
+                    snprintf(buf, sizeof(buf), "%d", j + 1);
+                    printf("%-*s%s", k, "", buf);
+                    k = 4 - strlen(buf);
+                }
+            }
+            printf("\n");
+            printf("%#07"PRIx64"    %-35s", channel_layout_map[i].layout, channel_layout_map[i].name);
+            for (int j = 0, k = 0; j < 18; j++)
+            {
+                if (channel_layout_map[i].layout & (1ULL << j))
+                {
+                    av_channel_name(buf, sizeof(buf), j);
+                    printf("%-*s%s", k, "", buf);
+                    k = 4 - strlen(buf);
+                }
+            }
+            printf("\n");
+        }
+    }
 }
 
 enum OptGroup {
