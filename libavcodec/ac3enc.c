@@ -2196,8 +2196,8 @@ static av_cold void set_channel_info(AVCodecContext *avctx)
     case AV_CH_LAYOUT_SURROUND:       s->channel_mode = AC3_CHMODE_3F;     break;
     case AV_CH_LAYOUT_2_1:            s->channel_mode = AC3_CHMODE_2F1R;   break;
     case AV_CH_LAYOUT_4POINT0:        s->channel_mode = AC3_CHMODE_3F1R;   break;
-    case AV_CH_LAYOUT_QUAD:
-    case AV_CH_LAYOUT_2_2:            s->channel_mode = AC3_CHMODE_2F2R;   break;
+    case AV_CH_LAYOUT_QUAD:                                                      //fixme
+    case AV_CH_LAYOUT_2_2:            s->channel_mode = AC3_CHMODE_2F2R;   break;//fixme
     case AV_CH_LAYOUT_5POINT0:
     case AV_CH_LAYOUT_5POINT0_BACK:   s->channel_mode = AC3_CHMODE_3F2R;   break;
     }

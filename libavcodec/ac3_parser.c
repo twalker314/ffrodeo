@@ -327,6 +327,7 @@ int ff_ac3_parse_header(GetBitContext *gbc, AC3HeaderInfo *hdr)
 
         hdr->bitstream_mode = get_bits(gbc, 3);
         hdr->channel_mode = get_bits(gbc, 3);
+        //fixme
 
         if(hdr->channel_mode == AC3_CHMODE_STEREO) {
             hdr->dolby_surround_mode = get_bits(gbc, 2);

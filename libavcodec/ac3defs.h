@@ -71,7 +71,7 @@ typedef enum {
     AC3_CHMODE_3F,
     AC3_CHMODE_2F1R,
     AC3_CHMODE_3F1R,
-    AC3_CHMODE_2F2R,
+    AC3_CHMODE_2F2R,//fixme
     AC3_CHMODE_3F2R
 } AC3ChannelMode;
 
