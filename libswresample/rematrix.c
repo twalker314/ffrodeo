@@ -145,7 +145,7 @@ static void build_matrix(const AVChannelLayout *in_ch_layout, const AVChannelLay
     for(i=0; i<FF_ARRAY_ELEMS(matrix); i++){
         if(   av_channel_layout_index_from_channel(in_ch_layout, i) >= 0
            && av_channel_layout_index_from_channel(out_ch_layout, i) >= 0)
-            matrix[i][i]= 1.0;
+            matrix[i][i]= 1.0;//no attenuation
     }
 
 //FIXME implement dolby surround
@@ -205,8 +205,8 @@ static void build_matrix(const AVChannelLayout *in_ch_layout, const AVChannelLay
             matrix[BACK_CENTER][BACK_RIGHT]+= M_SQRT1_2;
         } else if (av_channel_layout_index_from_channel(out_ch_layout, AV_CHAN_SIDE_LEFT) >= 0) {
             if (av_channel_layout_index_from_channel(in_ch_layout, AV_CHAN_SIDE_LEFT) >= 0) {
-                matrix[ SIDE_LEFT][ BACK_LEFT]+= M_SQRT1_2;
-                matrix[SIDE_RIGHT][BACK_RIGHT]+= M_SQRT1_2;
+                matrix[ SIDE_LEFT][ BACK_LEFT]+= M_SQRT1_2;//back into side with attenuation
+                matrix[SIDE_RIGHT][BACK_RIGHT]+= M_SQRT1_2;//back into side with attenuation
             }else{
             matrix[ SIDE_LEFT][ BACK_LEFT]+= 1.0;
             matrix[SIDE_RIGHT][BACK_RIGHT]+= 1.0;
@@ -238,8 +238,8 @@ static void build_matrix(const AVChannelLayout *in_ch_layout, const AVChannelLay
             /* if back channels do not exist in the input, just copy side
                channels to back channels, otherwise mix side into back */
             if (av_channel_layout_index_from_channel(in_ch_layout, AV_CHAN_BACK_LEFT) >= 0) {
-                matrix[BACK_LEFT ][SIDE_LEFT ] += M_SQRT1_2;
-                matrix[BACK_RIGHT][SIDE_RIGHT] += M_SQRT1_2;
+                matrix[BACK_LEFT ][SIDE_LEFT ] += M_SQRT1_2;//side into back with attenuation
+                matrix[BACK_RIGHT][SIDE_RIGHT] += M_SQRT1_2;//side into back with attenuation
             } else {
                 matrix[BACK_LEFT ][SIDE_LEFT ] += 1.0;
                 matrix[BACK_RIGHT][SIDE_RIGHT] += 1.0;
