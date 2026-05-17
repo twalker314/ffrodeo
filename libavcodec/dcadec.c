@@ -1641,7 +1641,7 @@ static int set_channel_layout(AVCodecContext *avctx, int *channels, int num_core
                 s->output             = s->audio_header.prim_channels == 2 ? s->amode : DCA_STEREO;
                 avctx->channel_layout = AV_CH_LAYOUT_STEREO;
             }
-            else if (avctx->request_channel_layout & AV_CH_LAYOUT_NATIVE) {
+            else if (avctx->request_channel_layout & AV_CH_LAYOUT_NATIVE) {//that is what I was looking for
                 static const int8_t dca_channel_order_native[9] = { 0, 1, 2, 3, 4, 5, 6, 7, 8 };
                 s->channel_order_tab = dca_channel_order_native;
             }
@@ -1682,7 +1682,7 @@ static int set_channel_layout(AVCodecContext *avctx, int *channels, int num_core
 
         avctx->channel_layout = channel_layout;
 
-        if (!(avctx->request_channel_layout & AV_CH_LAYOUT_NATIVE)) {
+        if (!(avctx->request_channel_layout & AV_CH_LAYOUT_NATIVE)) {//that is what I was looking for
             /* Estimate DTS --> avcodec ordering table */
             for (chset = -1, j = 0; chset < s->xxch_chset; ++chset) {
                 mask = chset >= 0 ? s->xxch_spk_masks[chset]
