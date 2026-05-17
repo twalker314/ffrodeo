@@ -49,7 +49,7 @@ int ff_dca_set_channel_layout(AVCodecContext *avctx, int *ch_remap, int dca_mask
     int dca_ch, wav_ch, nchannels = 0;
 
     av_channel_layout_uninit(&avctx->ch_layout);
-    if (s->output_channel_order == CHANNEL_ORDER_CODED) {
+    if (s->output_channel_order == CHANNEL_ORDER_CODED) {//note to self
         for (dca_ch = 0; dca_ch < DCA_SPEAKER_COUNT; dca_ch++)
             if (dca_mask & (1U << dca_ch))
                 ch_remap[nchannels++] = dca_ch;

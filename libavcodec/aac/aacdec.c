@@ -512,7 +512,7 @@ int ff_aac_output_configure(AACDecContext *ac,
     }
     // Try to sniff a reasonable channel order, otherwise output the
     // channels in the order the PCE declared them.
-    if (ac->output_channel_order == CHANNEL_ORDER_DEFAULT)
+    if (ac->output_channel_order == CHANNEL_ORDER_DEFAULT)//note to self
         layout = sniff_channel_order(layout_map, tags);
     for (i = 0; i < tags; i++) {
         int type =     layout_map[i][0];

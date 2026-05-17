@@ -1066,7 +1066,7 @@ static int filter_frame(DBEDecodeContext *s, AVFrame *frame)
         reorder = ch_reorder_4;
     else if (metadata->nb_channels == 6)
         reorder = ch_reorder_6;
-    else if (metadata->nb_programs == 1 && metadata->output_channel_order == CHANNEL_ORDER_DEFAULT)
+    else if (metadata->nb_programs == 1 && metadata->output_channel_order == CHANNEL_ORDER_DEFAULT)//note to self
         reorder = ch_reorder_8;
     else
         reorder = ch_reorder_n;
