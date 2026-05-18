@@ -185,7 +185,10 @@ static int caf_write_header(AVFormatContext *s)
     avio_wb32(pb, par->ch_layout.nb_channels);        //< mChannelsPerFrame
     avio_wb32(pb, av_get_bits_per_sample(par->codec_id)); //< mBitsPerChannel
 
-    if (par->ch_layout.order == AV_CHANNEL_ORDER_NATIVE) {
+    // fixme: properly detect which codecs are compatible with a "PCM" chan
+    if (par->ch_layout.order == AV_CHANNEL_ORDER_NATIVE &&
+        par->codec_id >= AV_CODEC_ID_PCM_S16LE &&
+        par->codec_id <= AV_CODEC_ID_PCM_SGA) {
         ffio_wfourcc(pb, "chan");
         avio_wb64(pb, 12);
         ff_mov_write_chan(pb, par->ch_layout.u.mask);

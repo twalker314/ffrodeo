@@ -1001,11 +1001,16 @@ static int mov_write_chan_tag(AVFormatContext *s, AVIOContext *pb, MOVTrack *tra
     int64_t pos = avio_tell(pb);
     int num_desc, ret;
 
-    // fixme: bug: what if the audio format is not PCM??
-    av_log(s, AV_LOG_INFO, "mov_write_chan_tag()\n");
-
     if (track->multichannel_as_mono)
         return 0;
+
+    // fixme: properly detect which codecs are compatible with a "PCM" chan
+    if (track->par->codec_id <= AV_CODEC_ID_PCM_S16LE ||
+        track->par->codec_id >= AV_CODEC_ID_PCM_SGA)
+        return 0;
+
+    // fixme: bug: what if the audio format is not PCM??
+    av_log(s, AV_LOG_INFO, "mov_write_chan_tag()\n");
 
     ret = ff_mov_get_channel_layout_tag(track->par, &layout_tag,
                                         &bitmap, &channel_desc);
