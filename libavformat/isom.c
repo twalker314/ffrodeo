@@ -422,7 +422,7 @@ void ff_mov_write_chan(AVIOContext *pb, int64_t channel_layout)
             break;
         }
 
-    if (layout_tag) {
+    if (layout_tag && 0) {
         avio_wb32(pb, layout_tag); // mChannelLayoutTag
         avio_wb32(pb, 0);          // mChannelBitmap
     } else {
