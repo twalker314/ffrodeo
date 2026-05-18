@@ -443,9 +443,9 @@ void ff_mov_write_chan(AVIOContext *pb, int64_t channel_layout)
     int xxx_debug_full_bitmap = 0;
     int xxx_debug_use_bitmaps = 1;
     uint32_t layout_tag = 0;
-    
+
     // fixme: bug: what if the audio format is not PCM??
-    // fixing will have to happen upstream from here ofc
+    av_log(pb, AV_LOG_INFO, "ff_mov_write_chan()\n");
 
     for (layouts = mov_channel_layout; layouts->channel_layout; layouts++)
         if (channel_layout == layouts->channel_layout) {

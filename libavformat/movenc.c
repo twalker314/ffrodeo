@@ -1001,6 +1001,9 @@ static int mov_write_chan_tag(AVFormatContext *s, AVIOContext *pb, MOVTrack *tra
     int64_t pos = avio_tell(pb);
     int num_desc, ret;
 
+    // fixme: bug: what if the audio format is not PCM??
+    av_log(s, AV_LOG_INFO, "mov_write_chan_tag()\n");
+
     if (track->multichannel_as_mono)
         return 0;
 
