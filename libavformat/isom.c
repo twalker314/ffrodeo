@@ -382,6 +382,30 @@ int ff_mp4_read_dec_config_descr(void *logctx, AVStream *st, AVIOContext *pb)
     return 0;
 }
 
+/*
+ * All bits set: afinfo: Channel layout: 17.1 (L R C LFE Ls Rs Lc Rc Cs Lsd Rsd Ts Vhl Vhc Vhr Tbl Tbc Tbr)
+ */
+enum {
+    kCAFChannelBit_Left                 = (1<<0),  // afinfo: L
+    kCAFChannelBit_Right                = (1<<1),  // afinfo: R
+    kCAFChannelBit_Center               = (1<<2),  // afinfo: C
+    kCAFChannelBit_LFEScreen            = (1<<3),  // afinfo: LFE
+    kCAFChannelBit_LeftSurround         = (1<<4),  // afinfo: Ls  // WAVE: "Back Left"
+    kCAFChannelBit_RightSurround        = (1<<5),  // afinfo: Rs  // WAVE: "Back Right"
+    kCAFChannelBit_LeftCenter           = (1<<6),  // afinfo: Lc
+    kCAFChannelBit_RightCenter          = (1<<7),  // afinfo: Rc
+    kCAFChannelBit_CenterSurround       = (1<<8),  // afinfo: Cs  // WAVE: "Back Center"
+    kCAFChannelBit_LeftSurroundDirect   = (1<<9),  // afinfo: Lsd // WAVE: "Side Left"
+    kCAFChannelBit_RightSurroundDirect  = (1<<10), // afinfo: Rsd // WAVE: "Side Right"
+    kCAFChannelBit_TopCenterSurround    = (1<<11), // afinfo: Ts
+    kCAFChannelBit_VerticalHeightLeft   = (1<<12), // afinfo: Vhl // WAVE: "Top Front Left"
+    kCAFChannelBit_VerticalHeightCenter = (1<<13), // afinfo: Vhc // WAVE: "Top Front Center"
+    kCAFChannelBit_VerticalHeightRight  = (1<<14), // afinfo: Vhr // WAVE: "Top Front Right"
+    kCAFChannelBit_TopBackLeft          = (1<<15), // afinfo: Tbl
+    kCAFChannelBit_TopBackCenter        = (1<<16), // afinfo: Tbc
+    kCAFChannelBit_TopBackRight         = (1<<17)  // afinfo: Tbr
+};
+
 typedef struct MovChannelLayout {
     int64_t  channel_layout;
     uint32_t layout_tag;
@@ -390,9 +414,11 @@ typedef struct MovChannelLayout {
 static const MovChannelLayout mov_channel_layout[] = {
     { AV_CH_LAYOUT_MONO,                         (100<<16) | 1}, // kCAFChannelLayoutTag_Mono
     { AV_CH_LAYOUT_STEREO,                       (101<<16) | 2}, // kCAFChannelLayoutTag_Stereo
+    { AV_CH_LAYOUT_STEREO,                       (102<<16) | 2}, // kCAFChannelLayoutTag_StereoHeadphones // fixme: unreachable
     { AV_CH_LAYOUT_2_1,                          (131<<16) | 3}, // kCAFChannelLayoutTag_ITU_2_1
     { AV_CH_LAYOUT_QUAD,                         (132<<16) | 4}, // kCAFChannelLayoutTag_ITU_2_2
     { AV_CH_LAYOUT_2_2,                          (132<<16) | 4}, // kCAFChannelLayoutTag_ITU_2_2
+    { AV_CH_LAYOUT_QUAD,                         (108<<16) | 4}, // kCAFChannelLayoutTag_Quadraphonic     // fixme: unreachable
     { AV_CH_LAYOUT_SURROUND,                     (113<<16) | 3}, // kCAFChannelLayoutTag_MPEG_3_0_A
     { AV_CH_LAYOUT_4POINT0,                      (115<<16) | 4}, // kCAFChannelLayoutTag_MPEG_4_0_A
     { AV_CH_LAYOUT_5POINT0_BACK,                 (117<<16) | 5}, // kCAFChannelLayoutTag_MPEG_5_0_A
@@ -414,6 +440,8 @@ static const MovChannelLayout mov_channel_layout[] = {
 void ff_mov_write_chan(AVIOContext *pb, int64_t channel_layout)
 {
     const MovChannelLayout *layouts;
+    int xxx_debug_full_bitmap = 0;
+    int xxx_debug_use_bitmaps = 1;
     uint32_t layout_tag = 0;
 
     for (layouts = mov_channel_layout; layouts->channel_layout; layouts++)
@@ -422,7 +450,32 @@ void ff_mov_write_chan(AVIOContext *pb, int64_t channel_layout)
             break;
         }
 
-    if (layout_tag && 0) {
+    if (xxx_debug_full_bitmap) {
+        layout_tag      = 0;
+        channel_layout  = 0;
+        channel_layout |= kCAFChannelBit_Left;
+        channel_layout |= kCAFChannelBit_Right;
+        channel_layout |= kCAFChannelBit_Center;
+        channel_layout |= kCAFChannelBit_LFEScreen;
+        channel_layout |= kCAFChannelBit_LeftSurround;
+        channel_layout |= kCAFChannelBit_RightSurround;
+        channel_layout |= kCAFChannelBit_LeftCenter;
+        channel_layout |= kCAFChannelBit_RightCenter;
+        channel_layout |= kCAFChannelBit_CenterSurround;
+        channel_layout |= kCAFChannelBit_LeftSurroundDirect;
+        channel_layout |= kCAFChannelBit_RightSurroundDirect;
+        channel_layout |= kCAFChannelBit_TopCenterSurround;
+        channel_layout |= kCAFChannelBit_VerticalHeightLeft;
+        channel_layout |= kCAFChannelBit_VerticalHeightCenter;
+        channel_layout |= kCAFChannelBit_VerticalHeightRight;
+        channel_layout |= kCAFChannelBit_TopBackLeft;
+        channel_layout |= kCAFChannelBit_TopBackCenter;
+        channel_layout |= kCAFChannelBit_TopBackRight;
+    } else if (xxx_debug_use_bitmaps) {
+        layout_tag = 0;
+    }
+
+    if (layout_tag) {
         avio_wb32(pb, layout_tag); // mChannelLayoutTag
         avio_wb32(pb, 0);          // mChannelBitmap
     } else {
