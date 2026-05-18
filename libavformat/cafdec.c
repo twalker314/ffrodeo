@@ -351,7 +351,9 @@ static int read_header(AVFormatContext *s)
     int found_data, ret;
     int64_t size, pos;
 
-    avio_skip(pb, 8); /* magic, version, file flags */
+    avio_skip(pb, 4); /* magic */
+    av_log(s, AV_LOG_INFO, "CAFFileHeader: mFileVersion: %d\n", avio_rb16(pb));
+    avio_skip(pb, 2); /* file flags */
 
     /* audio description chunk */
     if (avio_rb32(pb) != MKBETAG('d','e','s','c')) {
