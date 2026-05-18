@@ -907,6 +907,7 @@ static int decode_ga_specific_config(AACDecContext *ac, AVCodecContext *avctx,
         m4ac->object_type == AOT_ER_AAC_SCALABLE)
         skip_bits(gb, 3);     // layerNr
 
+    av_log(ac, AV_LOG_INFO, "decode_ga_specific_config: channel_config %d\n", channel_config);//debug
     if (channel_config == 0) {
         skip_bits(gb, 4);  // element_instance_tag
         tags = decode_pce(avctx, m4ac, layout_map, gb, get_bit_alignment);
@@ -2118,6 +2119,7 @@ static int parse_adts_frame_header(AACDecContext *ac, GetBitContext *gb)
             ac->warned_num_aac_frames = 1;
         }
         push_output_configuration(ac);
+        av_log(ac, AV_LOG_INFO, "parse_adts_frame_header: hdr_info.chan_config %"PRIu8"\n", hdr_info.chan_config);//debug
         if (hdr_info.chan_config) {
             ac->oc[1].m4ac.chan_config = hdr_info.chan_config;
             if ((ret = ff_aac_set_default_channel_config(ac, ac->avctx,

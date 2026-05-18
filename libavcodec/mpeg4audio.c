@@ -97,6 +97,7 @@ int ff_mpeg4audio_get_config_gb(MPEG4AudioConfig *c, GetBitContext *gb,
     c->object_type = get_object_type(gb);
     c->sample_rate = get_sample_rate(gb, &c->sampling_index);
     c->chan_config = get_bits(gb, 4);
+    av_log(NULL, AV_LOG_INFO, "decode_ga_specific_config: c->chan_config %d\n", c->chan_config);//debug
     if (c->chan_config < FF_ARRAY_ELEMS(ff_mpeg4audio_channels))
         c->channels = ff_mpeg4audio_channels[c->chan_config];
     else {
