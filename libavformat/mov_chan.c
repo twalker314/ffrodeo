@@ -325,7 +325,7 @@ static const enum MovChannelLayoutTag mov_ch_layouts_wav[] = {
     MOV_CH_LAYOUT_MPEG_5_1_A,
     MOV_CH_LAYOUT_MPEG_6_1_A,
     MOV_CH_LAYOUT_MPEG_7_1_A,
-    MOV_CH_LAYOUT_MPEG_7_1_C,
+    MOV_CH_LAYOUT_MPEG_7_1_C, // should *not* match AV_CH_LAYPOUT_7POINT1, does it??? test
     MOV_CH_LAYOUT_SMPTE_DTV,
     0,
 };
@@ -449,10 +449,13 @@ static int is_layout_valid_for_tag(const AVChannelLayout *ch_layout, uint32_t ta
 
     layout_map = find_layout_map(tag, map);
     if (layout_map) {
+        av_log(NULL, AV_LOG_INFO, "ff_mov_get_channel_layout_tag: layout_map: is_layout_valid_for_tag: %p\n", layout_map);//debug
         int i;
         for (i = 0; i < channels; i++) {
-            if (av_channel_layout_channel_from_index(ch_layout, i) != layout_map[i].id)
+            if (av_channel_layout_channel_from_index(ch_layout, i) != layout_map[i].id) {
+                av_log(NULL, AV_LOG_INFO, "ff_mov_get_channel_layout_tag: layout_map: av_channel_layout_channel_from_index mismatch\n");//debug
                 break;
+            }
         }
         if (i == channels)
             return 1;
@@ -477,6 +480,7 @@ int ff_mov_get_channel_layout_tag(const AVCodecParameters *par,
     if (mov_codec_ch_layouts[i].codec_id != AV_CODEC_ID_NONE)
         layouts = mov_codec_ch_layouts[i].layouts;
 
+    av_log(NULL, AV_LOG_INFO, "ff_mov_get_channel_layout_tag: layouts: %p\n", layouts);//debug
     if (layouts) {
         /* find the layout tag for the specified channel layout */
         for (i = 0; layouts[i] != 0; i++)
@@ -484,6 +488,8 @@ int ff_mov_get_channel_layout_tag(const AVCodecParameters *par,
                 break;
 
         tag = layouts[i];
+        av_log(NULL, AV_LOG_INFO, "ff_mov_get_channel_layout_tag: tag = layouts[%d]: %"PRIu32"\n", i, tag);//debug
+        tag = 0;//debug
     }
 
     *layout = tag;
@@ -492,6 +498,7 @@ int ff_mov_get_channel_layout_tag(const AVCodecParameters *par,
 
     /* if no tag was found, use channel bitmap or description as a backup if possible */
     if (tag == 0) {
+        av_log(NULL, AV_LOG_INFO, "ff_mov_get_channel_layout_tag: tag == 0\n");//debug
         uint32_t *channel_desc;
         if (par->ch_layout.order == AV_CHANNEL_ORDER_NATIVE &&
             par->ch_layout.u.mask < 0x40000) {
