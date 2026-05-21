@@ -500,7 +500,7 @@ int ff_mov_get_channel_layout_tag(const AVCodecParameters *par,
     if (tag == 0) {
         av_log(NULL, AV_LOG_INFO, "ff_mov_get_channel_layout_tag: tag == 0\n");//debug
         uint32_t *channel_desc;
-        if (par->ch_layout.order == AV_CHANNEL_ORDER_NATIVE &&
+        if (par->ch_layout.order == AV_CHANNEL_ORDER_NATIVE && 0 &&//debug
             par->ch_layout.u.mask < 0x40000) {
             *layout = MOV_CH_LAYOUT_USE_BITMAP;
             *bitmap = (uint32_t)par->ch_layout.u.mask;
