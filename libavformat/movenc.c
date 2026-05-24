@@ -1001,6 +1001,25 @@ static int mov_write_chan_tag(AVFormatContext *s, AVIOContext *pb, MOVTrack *tra
     int64_t pos = avio_tell(pb);
     int num_desc, ret;
 
+    enum AVCodecID codec_id;
+    for (codec_id = AV_CODEC_ID_FIRST_AUDIO;
+         codec_id < AV_CODEC_ID_FIRST_SUBTITLE; codec_id++) {
+        if (ff_codec_get_tag(ff_codec_movaudio_tags, codec_id)) {
+            const AVCodec *decoder = avcodec_find_decoder(codec_id);
+            const AVCodec *encoder = avcodec_find_encoder(codec_id);
+            if (!decoder) continue;
+            av_log(s, AV_LOG_VERBOSE,     "codec_id %#x with name %s\n", codec_id, decoder->name);
+            if (encoder)
+            av_log(s, AV_LOG_VERBOSE, "------------> encoder name %s\n", encoder->name);
+            av_log(s, AV_LOG_VERBOSE, "------------------------------%s", "\n");
+        }
+    }
+    /*
+     * skip 'chan' to test which codecs/encoders can indicate a layout in bitstream/extradata...
+     * check output using both afinfo/ffprobe, should either see expected ch_layout, it works...
+     */
+    return 0;
+
     if (track->multichannel_as_mono)
         return 0;
 
