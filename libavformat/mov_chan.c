@@ -32,47 +32,72 @@
 #include "libavcodec/codec_id.h"
 #include "mov_chan.h"
 
+/*
+ * Notes about WAVE to kAudioChannelLabel mapping.
+ *
+ * When reading a CAF/AIFF/MOV file with:
+ *  - kAudioChannelLayoutTag_UseChannelBitmap
+ *  - mChannelBitmap 0x3ffff (all kAudioChannelBits set)
+ * afinfo reports:
+ * Channel layout: 17.1 (L R C LFE Ls Rs Lc Rc Cs Lsd Rsd Ts Vhl Vhc Vhr Tbl Tbc Tbr)
+ * back left/right mapped to kAudioChannelLabel_LeftSurround/RightSurround
+ * side left/right mapped to kAudioChannelLabel_LeftSurroundDirect/RightSurroundDirect
+ *
+ * When reading a WAVE file with:
+ *  - WAVEFORMATEXTENSIBLE dwChannelMask 0x3ffff (all 18 WAVE channels)
+ * afinfo reports:
+ * Channel layout: 17.1 (L R C LFE Rls Rrs Lc Rc Cs Ls Rs Ts Vhl Vhc Vhr Tbl Tbc Tbr)
+ * back left/right mapped to kAudioChannelLabel_RearSurroundLeft/RearSurroundRight
+ * side left/right mapped to kAudioChannelLabel_LeftSurround/RightSurround
+ *
+ * The latter mapping seems preferable as:
+ *  - kAudioChannelLayoutTag_MPEG_* use Ls/Rs and Rls/Rrs (no Lsd/Rsd)
+ *  - kAudioChannelLayoutTag_WAVE_* use Ls/Rs and Rls/Rrs (no Lsd/Rsd)
+ */
 enum {
-    c_L      = AV_CHAN_FRONT_LEFT,
-    c_R      = AV_CHAN_FRONT_RIGHT,
-    c_C      = AV_CHAN_FRONT_CENTER,
-    c_LFE    = AV_CHAN_LOW_FREQUENCY,
-    c_Rls    = AV_CHAN_BACK_LEFT,
-    c_Rrs    = AV_CHAN_BACK_RIGHT,
-    c_Lc     = AV_CHAN_FRONT_LEFT_OF_CENTER,
-    c_Rc     = AV_CHAN_FRONT_RIGHT_OF_CENTER,
-    c_Cs     = AV_CHAN_BACK_CENTER,
-    c_Ls     = AV_CHAN_SIDE_LEFT,
-    c_Rs     = AV_CHAN_SIDE_RIGHT,
-    c_Ts     = AV_CHAN_TOP_CENTER,
-    c_Vhl    = AV_CHAN_TOP_FRONT_LEFT,
-    c_Vhc    = AV_CHAN_TOP_FRONT_CENTER,
-    c_Vhr    = AV_CHAN_TOP_FRONT_RIGHT,
-    c_Rlt    = AV_CHAN_TOP_BACK_LEFT,
-    //       = AV_CHAN_TOP_BACK_CENTER,
-    c_Rrt    = AV_CHAN_TOP_BACK_RIGHT,
-    c_Lt     = AV_CHAN_STEREO_LEFT,
-    c_Rt     = AV_CHAN_STEREO_RIGHT,
-    c_Lw     = AV_CHAN_WIDE_LEFT,
-    c_Rw     = AV_CHAN_WIDE_RIGHT,
-    c_Lsd    = AV_CHAN_SURROUND_DIRECT_LEFT,
-    c_Rsd    = AV_CHAN_SURROUND_DIRECT_RIGHT,
-    c_LFE2   = AV_CHAN_LOW_FREQUENCY_2,
-    //       = AV_CHAN_TOP_SIDE_LEFT,
-    //       = AV_CHAN_TOP_SIDE_RIGHT,
-    //       = AV_CHAN_BOTTOM_FRONT_CENTER,
-    //       = AV_CHAN_BOTTOM_FRONT_LEFT,
-    //       = AV_CHAN_BOTTOM_FRONT_RIGHT,
-    c_W      = AV_CHAN_AMBISONIC_BASE,
-    c_Y      = AV_CHAN_AMBISONIC_BASE + 1,
-    c_Z      = AV_CHAN_AMBISONIC_BASE + 2,
-    c_X      = AV_CHAN_AMBISONIC_BASE + 3,
+    c_L      = AV_CHAN_FRONT_LEFT,              // kAudioChannelLabel_Left
+    c_R      = AV_CHAN_FRONT_RIGHT,             // kAudioChannelLabel_Right
+    c_C      = AV_CHAN_FRONT_CENTER,            // kAudioChannelLabel_Center
+    c_LFE    = AV_CHAN_LOW_FREQUENCY,           // kAudioChannelLabel_LFEScreen
+    /* no kAudioChannelLabel_LFE1; LFE1 label only used in comments (CoreAudioBaseTypes.h) */
+    c_LFE1   = AV_CHAN_LOW_FREQUENCY,           // kAudioChannelLabel_LFEScreen
+    c_Rls    = AV_CHAN_BACK_LEFT,               // kAudioChannelLabel_RearSurroundLeft
+    c_Rrs    = AV_CHAN_BACK_RIGHT,              // kAudioChannelLabel_RearSurroundRight
+    c_Lc     = AV_CHAN_FRONT_LEFT_OF_CENTER,    // kAudioChannelLabel_LeftCenter
+    c_Rc     = AV_CHAN_FRONT_RIGHT_OF_CENTER,   // kAudioChannelLabel_RightCenter
+    c_Cs     = AV_CHAN_BACK_CENTER,             // kAudioChannelLabel_CenterSurround
+    c_Ls     = AV_CHAN_SIDE_LEFT,               // kAudioChannelLabel_LeftSurround
+    c_Rs     = AV_CHAN_SIDE_RIGHT,              // kAudioChannelLabel_RightSurround
+    c_Ts     = AV_CHAN_TOP_CENTER,              // kAudioChannelLabel_TopCenterSurround
+    c_Vhl    = AV_CHAN_TOP_FRONT_LEFT,          // kAudioChannelLabel_VerticalHeightLeft
+    c_Vhc    = AV_CHAN_TOP_FRONT_CENTER,        // kAudioChannelLabel_VerticalHeightCenter
+    c_Vhr    = AV_CHAN_TOP_FRONT_RIGHT,         // kAudioChannelLabel_VerticalHeightRight
+    c_Tbl    = AV_CHAN_TOP_BACK_LEFT,           // kAudioChannelLabel_TopBackLeft
+    c_Tbc    = AV_CHAN_TOP_BACK_CENTER,         // kAudioChannelLabel_TopBackCenter
+    c_Tbr    = AV_CHAN_TOP_BACK_RIGHT,          // kAudioChannelLabel_TopBackRight
+    c_Lt     = AV_CHAN_STEREO_LEFT,             // kAudioChannelLabel_LeftTotal
+    c_Rt     = AV_CHAN_STEREO_RIGHT,            // kAudioChannelLabel_RightTotal
+    c_Lw     = AV_CHAN_WIDE_LEFT,               // kAudioChannelLabel_LeftWide
+    c_Rw     = AV_CHAN_WIDE_RIGHT,              // kAudioChannelLabel_RightWide
+    c_Lsd    = AV_CHAN_SURROUND_DIRECT_LEFT,    // kAudioChannelLabel_LeftSurroundDirect
+    c_Rsd    = AV_CHAN_SURROUND_DIRECT_RIGHT,   // kAudioChannelLabel_RightSurroundDirect
+    c_LFE2   = AV_CHAN_LOW_FREQUENCY_2,         // kAudioChannelLabel_LFE2
+    c_Ltm    = AV_CHAN_TOP_SIDE_LEFT,           // kAudioChannelLabel_LeftTopMiddle
+    c_Rtm    = AV_CHAN_TOP_SIDE_RIGHT,          // kAudioChannelLabel_RightTopMiddle
+    c_Cb     = AV_CHAN_BOTTOM_FRONT_CENTER,     // kAudioChannelLabel_CenterBottom
+    c_Lb     = AV_CHAN_BOTTOM_FRONT_LEFT,       // kAudioChannelLabel_LeftBottom
+    c_Rb     = AV_CHAN_BOTTOM_FRONT_RIGHT,      // kAudioChannelLabel_RightBottom
+    c_W      = AV_CHAN_AMBISONIC_BASE,          // kAudioChannelLabel_Ambisonic_W
+    c_Y      = AV_CHAN_AMBISONIC_BASE + 1,      // kAudioChannelLabel_Ambisonic_Y
+    c_Z      = AV_CHAN_AMBISONIC_BASE + 2,      // kAudioChannelLabel_Ambisonic_Z
+    c_X      = AV_CHAN_AMBISONIC_BASE + 3,      // kAudioChannelLabel_Ambisonic_X
     /* The following have no exact counterparts */
-    c_LFE1   = AV_CHAN_LOW_FREQUENCY,
-    c_Csd    = AV_CHAN_NONE,
-    c_HI     = AV_CHAN_NONE,
-    c_VI     = AV_CHAN_NONE,
-    c_Haptic = AV_CHAN_NONE,
+    c_Csd    = AV_CHAN_NONE,                    // kAudioChannelLabel_CenterSurroundDirect
+    c_HI     = AV_CHAN_NONE,                    // kAudioChannelLabel_HearingImpaired
+    c_VI     = AV_CHAN_NONE,                    // kAudioChannelLabel_Narration
+    c_Haptic = AV_CHAN_NONE,                    // kAudioChannelLabel_Haptic
+    c_Ltr    = AV_CHAN_NONE,                    // kAudioChannelLabel_LeftTopRear
+    c_Rtr    = AV_CHAN_NONE,                    // kAudioChannelLabel_RightTopRear
 };
 
 enum {
@@ -157,7 +182,7 @@ struct MovChannelLayoutMap {
     CHLIST03( MOV_CH_LAYOUT_ITU_2_1,              L,   R,   Cs    )\
     CHLIST03( MOV_CH_LAYOUT_DVD_4,                L,   R,   LFE   )\
     CHLIST04( MOV_CH_LAYOUT_AMBISONIC_B_FORMAT,   W,   X,   Y,    Z     )\
-    CHLIST04( MOV_CH_LAYOUT_QUADRAPHONIC,         L,   R,   Rls,  Rrs   )\
+    CHLIST04( MOV_CH_LAYOUT_QUADRAPHONIC,         L,   R,   Ls,   Rs    )\
     CHLIST04( MOV_CH_LAYOUT_MPEG_4_0_A,           L,   R,   C,    Cs    )\
     CHLIST04( MOV_CH_LAYOUT_MPEG_4_0_B,           C,   L,   R,    Cs    )\
     CHLIST04( MOV_CH_LAYOUT_AC3_3_1,              L,   C,   R,    Cs    )\
@@ -204,7 +229,7 @@ struct MovChannelLayoutMap {
     CHLIST07( MOV_CH_LAYOUT_DTS_6_1_C,            C,   Cs,  L,    R,    Rls,  Rrs,   LFE   )\
     CHLIST08( MOV_CH_LAYOUT_OCTAGONAL,            L,   R,   Rls,  Rrs,  C,    Cs,    Ls,   Rs    )\
     CHLIST08( MOV_CH_LAYOUT_AAC_OCTAGONAL,        C,   L,   R,    Ls,   Rs,   Rls,   Rrs,  Cs    )\
-    CHLIST08( MOV_CH_LAYOUT_CUBE,                 L,   R,   Rls,  Rrs,  Vhl,  Vhr,   Rlt,  Rrt   )\
+    CHLIST08( MOV_CH_LAYOUT_CUBE,                 L,   R,   Ls,   Rs,   Vhl,  Vhr,   Ltr,  Rtr   )\
     CHLIST08( MOV_CH_LAYOUT_MPEG_7_1_A,           L,   R,   C,    LFE,  Ls,   Rs,    Lc,   Rc    )\
     CHLIST08( MOV_CH_LAYOUT_MPEG_7_1_B,           C,   Lc,  Rc,   L,    R,    Ls,    Rs,   LFE   )\
     CHLIST08( MOV_CH_LAYOUT_EMAGIC_DEFAULT_7_1,   L,   R,   Ls,   Rs,   C,    LFE,   Lc,   Rc    )\
