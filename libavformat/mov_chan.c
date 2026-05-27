@@ -345,17 +345,26 @@ static const enum MovChannelLayoutTag mov_ch_layouts_alac[] = {
 };
 
 static const enum MovChannelLayoutTag mov_ch_layouts_wav[] = {
-    MOV_CH_LAYOUT_MONO,
-    MOV_CH_LAYOUT_STEREO,
-    MOV_CH_LAYOUT_MATRIXSTEREO,
-    MOV_CH_LAYOUT_MPEG_3_0_A,
-    MOV_CH_LAYOUT_QUADRAPHONIC,
-    MOV_CH_LAYOUT_MPEG_5_0_A,
-    MOV_CH_LAYOUT_MPEG_5_1_A,
-    MOV_CH_LAYOUT_MPEG_6_1_A,
-    MOV_CH_LAYOUT_MPEG_7_1_A,
-    MOV_CH_LAYOUT_MPEG_7_1_C,
-    MOV_CH_LAYOUT_SMPTE_DTV,
+    MOV_CH_LAYOUT_MONO,         // AV_CHANNEL_LAYOUT_MONO                   C
+    MOV_CH_LAYOUT_STEREO,       // AV_CHANNEL_LAYOUT_STEREO                 L R
+    MOV_CH_LAYOUT_MATRIXSTEREO, // AV_CHANNEL_LAYOUT_STEREO_DOWNMIX         Lt Rt
+    MOV_CH_LAYOUT_DVD_4,        // AV_CHANNEL_LAYOUT_2POINT1                L R LFE
+    MOV_CH_LAYOUT_ITU_2_1,      // AV_CHANNEL_LAYOUT_2_1                    L R Cs
+    MOV_CH_LAYOUT_MPEG_3_0_A,   // AV_CHANNEL_LAYOUT_SURROUND               L R C
+    MOV_CH_LAYOUT_DVD_10,       // AV_CHANNEL_LAYOUT_3POINT1                L R C LFE
+    MOV_CH_LAYOUT_MPEG_4_0_A,   // AV_CHANNEL_LAYOUT_4POINT0                L R C Cs
+    MOV_CH_LAYOUT_DVD_11,       // AV_CHANNEL_LAYOUT_4POINT1                L R C LFE Cs
+    MOV_CH_LAYOUT_ITU_2_2,      // AV_CHANNEL_LAYOUT_2_2                    L R Ls Rs
+    MOV_CH_LAYOUT_WAVE_4_0_B,   // AV_CHANNEL_LAYOUT_QUAD                   L R Rls Rrs
+    MOV_CH_LAYOUT_MPEG_5_0_A,   // AV_CHANNEL_LAYOUT_5POINT0                L R C Ls Rs
+    MOV_CH_LAYOUT_WAVE_5_0_B,   // AV_CHANNEL_LAYOUT_5POINT0_BACK           L R C Rls Rrs
+    MOV_CH_LAYOUT_MPEG_5_1_A,   // AV_CHANNEL_LAYOUT_5POINT1                L R C LFE Ls Rs
+    MOV_CH_LAYOUT_WAVE_5_1_B,   // AV_CHANNEL_LAYOUT_5POINT1_BACK           L R C LFE Rls Rrs
+    MOV_CH_LAYOUT_WAVE_6_1,     // AV_CHANNEL_LAYOUT_6POINT1                L R C LFE Cs Ls Rs
+    MOV_CH_LAYOUT_WAVE_7_1,     // AV_CHANNEL_LAYOUT_7POINT1                L R C LFE Rls Rrs Ls Rs
+    MOV_CH_LAYOUT_CUBE,         // AV_CHANNEL_LAYOUT_CUBE                   L R Rls Rrs Vhl Vhr Tbl Tbr
+    MOV_CH_LAYOUT_CICP_14,      // AV_CHANNEL_LAYOUT_5POINT1POINT2          L R C LFE Ls Rs Vhl Vhr
+    MOV_CH_LAYOUT_SMPTE_DTV,    // AV_CHANNEL_LAYOUT_5POINT1|STEREO_DOWNMIX L R C LFE Ls Rs Lt Rt
     0,
 };
 
