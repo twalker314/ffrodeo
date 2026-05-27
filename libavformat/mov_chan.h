@@ -140,6 +140,7 @@ enum MovChannelLayoutTag {
     MOV_CH_LAYOUT_WAVE_5_1_B            = (187 << 16) | 6,
     MOV_CH_LAYOUT_WAVE_6_1              = (188 << 16) | 7,
     MOV_CH_LAYOUT_WAVE_7_1              = (189 << 16) | 8,
+    MOV_CH_LAYOUT_CICP_14               = (205 << 16) | 8,
 };
 
 /**
