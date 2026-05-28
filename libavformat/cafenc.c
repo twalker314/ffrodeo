@@ -26,6 +26,7 @@
 #include "isom.h"
 #include "avio_internal.h"
 #include "mux.h"
+#include "mov_chan.h"
 #include "libavutil/intfloat.h"
 #include "libavutil/dict.h"
 #include "libavutil/mem.h"
@@ -186,9 +187,58 @@ static int caf_write_header(AVFormatContext *s)
     avio_wb32(pb, av_get_bits_per_sample(par->codec_id)); //< mBitsPerChannel
 
     if (par->ch_layout.order == AV_CHANNEL_ORDER_NATIVE) {
-        ffio_wfourcc(pb, "chan");
-        avio_wb64(pb, 12);
-        ff_mov_write_chan(pb, par->ch_layout.u.mask);
+        uint32_t layout_tag, bitmap, *channel_desc;
+        int num_desc, ret, skip_chan = 0;
+
+        ret = ff_mov_get_channel_layout_tag(par, &layout_tag,
+                                            &bitmap, &channel_desc);
+        if (ret < 0) {
+            if (ret == AVERROR(ENOSYS)) {
+                av_log(s, AV_LOG_WARNING, "not writing 'chan' tag due to "
+                                          "lack of channel information\n");
+            }
+            skip_chan = 1;
+        } else {
+            /* no predefined tag found + ch_layout in AV_CHANNEL_ORDER_NATIVE
+             * but bitstream channels not actually in native order */
+            if (layout_tag == MOV_CH_LAYOUT_UNKNOWN)
+                skip_chan = 1;
+        }
+
+        av_log(s, AV_LOG_WARNING,
+               "mChannelLayoutTag %#x "
+               "mChannelBitmap %#x "
+               "mNumberChannelDescriptions %d\n",
+               layout_tag, bitmap, layout_tag ? 0 : par->ch_layout.nb_channels);//debug
+
+        /* https://developer.apple.com/library/archive/documentation/MusicAudio/Reference/CAFSpec/CAF_spec/CAF_spec.html#//apple_ref/doc/uid/TP40001862-CH210-BCGCIJCF
+         * The channel layout chunk is required for all CAF files that have more than two
+         * channels (unless there is no meaning or ordering of the channels in the file).
+         * There is no default assumed ordering of channels in a file with more than two
+         * channels. The channel layout chunk is optional for a CAF file with one or two
+         * channels. For a CAF file with one or two channels and no channel layout chunk,
+         * you can assume that a 1-channel file represents monaural data and a 2-channel
+         * file represents stereo with the left-channel sample first in each frame.
+         */
+        if (!skip_chan) { //fixme: mandatory, see above
+            num_desc = layout_tag ? 0 : par->ch_layout.nb_channels;
+
+            ffio_wfourcc(pb, "chan");           // mChunkType ‘chan’
+            avio_wb64(pb, 12 + num_desc * 20);  // mChunkSize Must always be valid
+            avio_wb32(pb, layout_tag);          // mChannelLayoutTag
+            avio_wb32(pb, bitmap);              // mChannelBitmap
+            avio_wb32(pb, num_desc);            // mNumberChannelDescriptions
+
+            for (int i = 0; i < num_desc; i++) {
+                avio_wb32(pb, channel_desc[i]); // mChannelLabel
+                avio_wb32(pb, 0);               // mChannelFlags
+                avio_wl32(pb, 0);               // mCoordinates[0]
+                avio_wl32(pb, 0);               // mCoordinates[1]
+                avio_wl32(pb, 0);               // mCoordinates[2]
+            }
+        }
+
+        av_free(channel_desc);
     }
 
     if (par->codec_id == AV_CODEC_ID_ALAC) {

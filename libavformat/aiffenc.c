@@ -147,6 +147,7 @@ static int aiff_write_header(AVFormatContext *s)
         avio_wb32(pb, 0xA2805140);
     }
 
+    //fixme only PCM formats, could use ff_mov_write_chan but: AV_CHANNEL_LAYOUT mappings need fixing!!!
     if (par->ch_layout.order == AV_CHANNEL_ORDER_NATIVE && par->ch_layout.nb_channels > 2) {
         ffio_wfourcc(pb, "CHAN");
         avio_wb32(pb, 12);

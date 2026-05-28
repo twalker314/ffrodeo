@@ -1,5 +1,5 @@
-a00bd18f70b66286e67d84f0df034a48 *tests/data/fate/caf-amr_nb-remux.caf
-4145 tests/data/fate/caf-amr_nb-remux.caf
+e6a58a439241dcf78602436fc28aa0b1 *tests/data/fate/caf-amr_nb-remux.caf
+4121 tests/data/fate/caf-amr_nb-remux.caf
 #extradata 0:       29, 0x6b3407d3
 #tb 0: 1/8000
 #media_type 0: audio

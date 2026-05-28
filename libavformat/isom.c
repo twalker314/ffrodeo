@@ -387,6 +387,7 @@ typedef struct MovChannelLayout {
     uint32_t layout_tag;
 } MovChannelLayout;
 
+//fixme: some AV_CHANNEL_LAYOUT mappings need fixing!!!
 static const MovChannelLayout mov_channel_layout[] = {
     { AV_CH_LAYOUT_MONO,                         (100<<16) | 1}, // kCAFChannelLayoutTag_Mono
     { AV_CH_LAYOUT_STEREO,                       (101<<16) | 2}, // kCAFChannelLayoutTag_Stereo
