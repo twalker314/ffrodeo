@@ -82,19 +82,19 @@ enum {
     c_Lsd    = AV_CHAN_SURROUND_DIRECT_LEFT,    // kAudioChannelLabel_LeftSurroundDirect
     c_Rsd    = AV_CHAN_SURROUND_DIRECT_RIGHT,   // kAudioChannelLabel_RightSurroundDirect
     c_LFE2   = AV_CHAN_LOW_FREQUENCY_2,         // kAudioChannelLabel_LFE2
-    //       = AV_CHAN_TOP_SIDE_LEFT,
-    //       = AV_CHAN_TOP_SIDE_RIGHT,
-    //       = AV_CHAN_BOTTOM_FRONT_CENTER,
-    //       = AV_CHAN_BOTTOM_FRONT_LEFT,
-    //       = AV_CHAN_BOTTOM_FRONT_RIGHT,
+    c_Ltm    = AV_CHAN_TOP_SIDE_LEFT,           // kAudioChannelLabel_LeftTopMiddle
+    c_Rtm    = AV_CHAN_TOP_SIDE_RIGHT,          // kAudioChannelLabel_RightTopMiddle
+    c_Cb     = AV_CHAN_BOTTOM_FRONT_CENTER,     // kAudioChannelLabel_CenterBottom
+    c_Lb     = AV_CHAN_BOTTOM_FRONT_LEFT,       // kAudioChannelLabel_LeftBottom
+    c_Rb     = AV_CHAN_BOTTOM_FRONT_RIGHT,      // kAudioChannelLabel_RightBottom
     c_W      = AV_CHAN_AMBISONIC_BASE,          // kAudioChannelLabel_Ambisonic_W
     c_Y      = AV_CHAN_AMBISONIC_BASE + 1,      // kAudioChannelLabel_Ambisonic_Y
     c_Z      = AV_CHAN_AMBISONIC_BASE + 2,      // kAudioChannelLabel_Ambisonic_Z
     c_X      = AV_CHAN_AMBISONIC_BASE + 3,      // kAudioChannelLabel_Ambisonic_X
     /* The following have no exact counterparts */
     c_Csd    = AV_CHAN_NONE,                    // kAudioChannelLabel_CenterSurroundDirect
-    c_HI     = AV_CHAN_NONE,
-    c_VI     = AV_CHAN_NONE,
+    c_HI     = AV_CHAN_NONE,                    // kAudioChannelLabel_HearingImpaired
+    c_VI     = AV_CHAN_NONE,                    // kAudioChannelLabel_Narration
     c_Haptic = AV_CHAN_NONE,                    // kAudioChannelLabel_Haptic
 };
 
