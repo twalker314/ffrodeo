@@ -233,7 +233,7 @@ struct MovChannelLayoutMap {
     CHLIST07( MOV_CH_LAYOUT_DTS_6_1_C,            C,   Cs,  L,    R,    Rls,  Rrs,   LFE   )\
     CHLIST08( MOV_CH_LAYOUT_OCTAGONAL,            L,   R,   Rls,  Rrs,  C,    Cs,    Ls,   Rs    )\
     CHLIST08( MOV_CH_LAYOUT_AAC_OCTAGONAL,        C,   L,   R,    Ls,   Rs,   Rls,   Rrs,  Cs    )\
-    CHLIST08( MOV_CH_LAYOUT_CUBE,                 L,   R,   Rls,  Rrs,  Vhl,  Vhr,   Ltr,  Rtr   )\
+    CHLIST08( MOV_CH_LAYOUT_CUBE,                 L,   R,   Ls,   Rs,   Vhl,  Vhr,   Ltr,  Rtr   )\
     CHLIST08( MOV_CH_LAYOUT_MPEG_7_1_A,           L,   R,   C,    LFE,  Ls,   Rs,    Lc,   Rc    )\
     CHLIST08( MOV_CH_LAYOUT_MPEG_7_1_B,           C,   Lc,  Rc,   L,    R,    Ls,    Rs,   LFE   )\
     CHLIST08( MOV_CH_LAYOUT_EMAGIC_DEFAULT_7_1,   L,   R,   Ls,   Rs,   C,    LFE,   Lc,   Rc    )\
