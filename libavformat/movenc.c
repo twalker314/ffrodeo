@@ -1039,17 +1039,7 @@ static int mov_write_chan_tag(AVFormatContext *s, AVIOContext *pb, MOVTrack *tra
     ffio_wfourcc(pb, "chan");   // Type
     avio_w8(pb, 0);             // Version
     avio_wb24(pb, 0);           // Flags
-    avio_wb32(pb, layout_tag);  // mChannelLayoutTag
-    avio_wb32(pb, bitmap);      // mChannelBitmap
-    avio_wb32(pb, num_desc);    // mNumberChannelDescriptions
-
-    for (int i = 0; i < num_desc; i++) {
-        avio_wb32(pb, channel_desc[i]); // mChannelLabel
-        avio_wb32(pb, 0);               // mChannelFlags
-        avio_wl32(pb, 0);               // mCoordinates[0]
-        avio_wl32(pb, 0);               // mCoordinates[1]
-        avio_wl32(pb, 0);               // mCoordinates[2]
-    }
+    ff_mov_write_audio_channel_layout(pb, layout_tag, bitmap, channel_desc, num_desc);
 
     av_free(channel_desc);
 

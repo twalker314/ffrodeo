@@ -158,6 +158,23 @@ int ff_mov_get_channel_layout_tag(const AVCodecParameters *par,
                                        uint32_t **pchannel_desc);
 
 /**
+ * Write an AudioChannelLayout structure for AIFF, CAF or MOV.
+ * If the input AVIOContext is NULL, returns the size of the AudioChannelLayout.
+ *
+ * @param[in] pb AVIOContext
+ * @param[in] layout_tag AudioChannelLayoutTag
+ * @param[in] bitmap AudioChannelBitmap
+ * @param[in] channel_desc array of AudioChannelLabel
+ * @param[in] num_desc count of AudioChannelLabel
+ * @return      size of the AudioChannelLayout structure
+ */
+int ff_mov_write_audio_channel_layout(AVIOContext *pb,
+                                      uint32_t layout_tag,
+                                      uint32_t bitmap,
+                                      uint32_t *channel_desc,
+                                      int num_desc);
+
+/**
  * Read 'chan' tag from the input stream.
  *
  * @param s     AVFormatContext
