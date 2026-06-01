@@ -182,7 +182,7 @@ struct MovChannelLayoutMap {
     CHLIST03( MOV_CH_LAYOUT_ITU_2_1,              L,   R,   Cs    )\
     CHLIST03( MOV_CH_LAYOUT_DVD_4,                L,   R,   LFE   )\
     CHLIST04( MOV_CH_LAYOUT_AMBISONIC_B_FORMAT,   W,   X,   Y,    Z     )\
-    CHLIST04( MOV_CH_LAYOUT_QUADRAPHONIC,         L,   R,   Rls,  Rrs   )\
+    CHLIST04( MOV_CH_LAYOUT_QUADRAPHONIC,         L,   R,   Ls,   Rs    )\
     CHLIST04( MOV_CH_LAYOUT_MPEG_4_0_A,           L,   R,   C,    Cs    )\
     CHLIST04( MOV_CH_LAYOUT_MPEG_4_0_B,           C,   L,   R,    Cs    )\
     CHLIST04( MOV_CH_LAYOUT_AC3_3_1,              L,   C,   R,    Cs    )\
