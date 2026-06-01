@@ -480,6 +480,55 @@ int ff_mov_get_channel_layout_tag(const AVCodecParameters *par,
     uint32_t tag = 0;
     const enum MovChannelLayoutTag *layouts = NULL;
 
+    /*
+     * XXX: testing-only.
+     */
+    static enum AVChannel mapped_channels[] = {
+        AV_CHAN_FRONT_LEFT,
+        AV_CHAN_FRONT_RIGHT,
+        AV_CHAN_FRONT_CENTER,
+        AV_CHAN_LOW_FREQUENCY,
+        AV_CHAN_BACK_LEFT,
+        AV_CHAN_BACK_RIGHT,
+        AV_CHAN_FRONT_LEFT_OF_CENTER,
+        AV_CHAN_FRONT_RIGHT_OF_CENTER,
+        AV_CHAN_BACK_CENTER,
+        AV_CHAN_SIDE_LEFT,
+        AV_CHAN_SIDE_RIGHT,
+        AV_CHAN_TOP_CENTER,
+        AV_CHAN_TOP_FRONT_LEFT,
+        AV_CHAN_TOP_FRONT_CENTER,
+        AV_CHAN_TOP_FRONT_RIGHT,
+        AV_CHAN_TOP_BACK_LEFT,
+        AV_CHAN_TOP_BACK_CENTER,
+        AV_CHAN_TOP_BACK_RIGHT,
+        AV_CHAN_STEREO_LEFT,
+        AV_CHAN_STEREO_RIGHT,
+        AV_CHAN_WIDE_LEFT,
+        AV_CHAN_WIDE_RIGHT,
+        AV_CHAN_SURROUND_DIRECT_LEFT,
+        AV_CHAN_SURROUND_DIRECT_RIGHT,
+        AV_CHAN_LOW_FREQUENCY_2,
+        AV_CHAN_TOP_SIDE_LEFT,
+        AV_CHAN_TOP_SIDE_RIGHT,
+        AV_CHAN_BOTTOM_FRONT_CENTER,
+        AV_CHAN_BOTTOM_FRONT_LEFT,
+        AV_CHAN_BOTTOM_FRONT_RIGHT,
+        AV_CHAN_NONE,
+    };
+    char testbuf[5];
+    for (int test = 0; mapped_channels[test] != AV_CHAN_NONE; test++) {
+        av_channel_name(testbuf, sizeof(testbuf), mapped_channels[test]);
+        if (mov_get_channel_label(mapped_channels[test]) == 0) {
+            fprintf(stderr, "AV_CHAN %d (%s) not mapped by mov_get_channel_label\n", mapped_channels[test], testbuf);
+            av_assert0(0);
+        }
+        if (mapped_channels[test] != mov_get_channel_id(mov_get_channel_label(mapped_channels[test]))) {
+            fprintf(stderr, "AV_CHAN %d (%s) inconsistent id <---> label mapping\n", mapped_channels[test], testbuf);
+            av_assert0(0);
+        }
+    }
+
     /* find the layout list for the specified codec */
     for (i = 0; mov_codec_ch_layouts[i].codec_id != AV_CODEC_ID_NONE; i++) {
         if (mov_codec_ch_layouts[i].codec_id == par->codec_id)
