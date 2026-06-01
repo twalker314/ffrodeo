@@ -25,6 +25,7 @@
 #include "caf.h"
 #include "isom.h"
 #include "avio_internal.h"
+#include "mov_chan.h"
 #include "mux.h"
 #include "libavutil/intfloat.h"
 #include "libavutil/dict.h"
@@ -186,9 +187,32 @@ static int caf_write_header(AVFormatContext *s)
     avio_wb32(pb, av_get_bits_per_sample(par->codec_id)); //< mBitsPerChannel
 
     if (par->ch_layout.order == AV_CHANNEL_ORDER_NATIVE) {
-        ffio_wfourcc(pb, "chan");
-        avio_wb64(pb, 12);
-        ff_mov_write_chan(pb, par->ch_layout.u.mask);
+        uint32_t layout_tag, bitmap, *channel_desc;
+        int ret, have_chan_data = 1;
+
+        ret = ff_mov_get_channel_layout_tag(par, &layout_tag,
+                                            &bitmap, &channel_desc);
+
+        if (ret < 0) {
+            if (ret == AVERROR(ENOSYS)) {
+                av_log(s, AV_LOG_WARNING, "not writing 'chan' tag due to "
+                       "lack of channel information\n");
+            }
+            have_chan_data = 0;
+        } else if (layout_tag == MOV_CH_LAYOUT_UNKNOWN) {
+            /* no predefined tag found + ch_layout in AV_CHANNEL_ORDER_NATIVE
+             * but bitstream channels not actually in native order */
+            have_chan_data = 0;
+        }
+
+        if (have_chan_data) {
+            int num_desc = layout_tag ? 0 : par->ch_layout.nb_channels;
+            int size = ff_mov_write_audio_channel_layout(NULL, layout_tag, bitmap,
+                                                         channel_desc, num_desc);
+            ffio_wfourcc(pb, "chan");
+            avio_wb64(pb, size);
+            ff_mov_write_audio_channel_layout(pb, layout_tag, bitmap, channel_desc, num_desc);
+        }
     }
 
     if (par->codec_id == AV_CODEC_ID_ALAC) {

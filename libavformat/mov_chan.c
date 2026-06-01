@@ -379,6 +379,8 @@ static const struct {
     { AV_CODEC_ID_AC3,          mov_ch_layouts_ac3  },
     { AV_CODEC_ID_ADPCM_IMA_QT, mov_ch_layouts_wav  },
     { AV_CODEC_ID_ALAC,         mov_ch_layouts_alac },
+    { AV_CODEC_ID_AMR_NB,       mov_ch_layouts_wav  },
+    { AV_CODEC_ID_AMR_WB,       mov_ch_layouts_wav  },
     { AV_CODEC_ID_MACE3,        mov_ch_layouts_wav  },
     { AV_CODEC_ID_MACE6,        mov_ch_layouts_wav  },
     { AV_CODEC_ID_PCM_ALAW,     mov_ch_layouts_wav  },
@@ -395,6 +397,7 @@ static const struct {
     { AV_CODEC_ID_PCM_S32LE,    mov_ch_layouts_wav  },
     { AV_CODEC_ID_PCM_S8,       mov_ch_layouts_wav  },
     { AV_CODEC_ID_PCM_U8,       mov_ch_layouts_wav  },
+    { AV_CODEC_ID_QDM2,         mov_ch_layouts_wav  },
     { AV_CODEC_ID_SPEEX,        mov_ch_layouts_wav  },
     { AV_CODEC_ID_NONE,         NULL                },
 };
