@@ -603,6 +603,36 @@ int ff_mov_get_channel_layout_tag(const AVCodecParameters *par,
     return 0;
 }
 
+int ff_mov_write_audio_channel_layout(AVIOContext *pb,
+                                      uint32_t layout_tag,
+                                      uint32_t bitmap,
+                                      uint32_t *channel_desc,
+                                      int num_desc) {
+    if (pb) {
+        avio_wb32(pb, layout_tag);          // mChannelLayoutTag
+        avio_wb32(pb, bitmap);              // mChannelBitmap
+        avio_wb32(pb, num_desc);            // mNumberChannelDescriptions
+        for (int i = 0; i < num_desc; i++) {
+            avio_wb32(pb, channel_desc[i]); // mChannelLabel
+            avio_wb32(pb, 0);               // mChannelFlags
+            avio_wl32(pb, 0);               // mCoordinates[0]
+            avio_wl32(pb, 0);               // mCoordinates[1]
+            avio_wl32(pb, 0);               // mCoordinates[2]
+        }
+    }
+    /* 4 bytes mChannelLayoutTag
+     * 4 bytes mChannelBitmap
+     * 4 bytes mNumberChannelDescriptions
+     * 20 bytes per AudioChannelDescription
+     * - 4 bytes mChannelLabel
+     * - 4 bytes mChannelFlags
+     * - 4 bytes mCoordinates[0]
+     * - 4 bytes mCoordinates[1]
+     * - 4 bytes mCoordinates[2]
+     */
+    return 12 + 20 * num_desc;
+}
+
 int ff_mov_read_chan(AVFormatContext *s, AVIOContext *pb, AVStream *st,
                      int64_t size)
 {
