@@ -148,35 +148,6 @@ static int aiff_write_header(AVFormatContext *s)
         avio_wb32(pb, 0xA2805140);
     }
 
-    if (par->ch_layout.order == AV_CHANNEL_ORDER_NATIVE && par->ch_layout.nb_channels > 2) {
-        uint32_t layout_tag, bitmap, *channel_desc;
-        int ret, have_chan_data = 1;
-
-        ret = ff_mov_get_channel_layout_tag(par, &layout_tag,
-                                            &bitmap, &channel_desc);
-
-        if (ret < 0) {
-            if (ret == AVERROR(ENOSYS)) {
-                av_log(s, AV_LOG_WARNING, "not writing 'chan' tag due to "
-                       "lack of channel information\n");
-            }
-            have_chan_data = 0;
-        } else if (layout_tag == MOV_CH_LAYOUT_UNKNOWN) {
-            /* no predefined tag found + ch_layout in AV_CHANNEL_ORDER_NATIVE
-             * but bitstream channels not actually in native order */
-            have_chan_data = 0;
-        }
-
-        if (have_chan_data) {
-            int num_desc = layout_tag ? 0 : par->ch_layout.nb_channels;
-            int size = ff_mov_write_audio_channel_layout(NULL, layout_tag, bitmap,
-                                                         channel_desc, num_desc);
-            ffio_wfourcc(pb, "CHAN");
-            avio_wb32(pb, size);
-            ff_mov_write_audio_channel_layout(pb, layout_tag, bitmap, channel_desc, num_desc);
-        }
-    }
-
     put_meta(s, "title",     MKBETAG('N', 'A', 'M', 'E'));
     put_meta(s, "author",    MKBETAG('A', 'U', 'T', 'H'));
     put_meta(s, "copyright", MKBETAG('(', 'c', ')', ' '));
@@ -215,6 +186,38 @@ static int aiff_write_header(AVFormatContext *s)
         ffio_wfourcc(pb, "wave");
         avio_wb32(pb, par->extradata_size);
         avio_write(pb, par->extradata, par->extradata_size);
+    }
+
+    /* must write CHAN chunk after COMM, as the latter contains the channel count,
+     * used by ff_mov_read_chan when the CHAN chunk contains channel descriptions.
+     * afconvert does the same when writing AIFF headers (COMM first, then CHAN). */
+    if (par->ch_layout.order == AV_CHANNEL_ORDER_NATIVE && par->ch_layout.nb_channels > 2) {
+        uint32_t layout_tag, bitmap, *channel_desc;
+        int ret, have_chan_data = 1;
+
+        ret = ff_mov_get_channel_layout_tag(par, &layout_tag,
+                                            &bitmap, &channel_desc);
+
+        if (ret < 0) {
+            if (ret == AVERROR(ENOSYS)) {
+                av_log(s, AV_LOG_WARNING, "not writing 'chan' tag due to "
+                       "lack of channel information\n");
+            }
+            have_chan_data = 0;
+        } else if (layout_tag == MOV_CH_LAYOUT_UNKNOWN) {
+            /* no predefined tag found + ch_layout in AV_CHANNEL_ORDER_NATIVE
+             * but bitstream channels not actually in native order */
+            have_chan_data = 0;
+        }
+
+        if (have_chan_data) {
+            int num_desc = layout_tag ? 0 : par->ch_layout.nb_channels;
+            int size = ff_mov_write_audio_channel_layout(NULL, layout_tag, bitmap,
+                                                         channel_desc, num_desc);
+            ffio_wfourcc(pb, "CHAN");
+            avio_wb32(pb, size);
+            ff_mov_write_audio_channel_layout(pb, layout_tag, bitmap, channel_desc, num_desc);
+        }
     }
 
     /* Sound data chunk */
