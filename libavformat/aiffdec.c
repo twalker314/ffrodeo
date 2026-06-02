@@ -257,6 +257,7 @@ static int aiff_read_header(AVFormatContext *s)
     while (filesize > 0) {
         /* parse different chunks */
         size = get_tag(pb, &tag);
+        av_log(s, AV_LOG_INFO, "tag=%.4s\n", (char*)&tag);
 
         if (size == AVERROR_EOF && offset > 0 && st->codecpar->block_align) {
             av_log(s, AV_LOG_WARNING, "header parser hit EOF\n");
