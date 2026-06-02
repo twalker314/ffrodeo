@@ -510,6 +510,66 @@ static uint32_t mov_get_channel_label(enum AVChannel channel)
     return 0;
 }
 
+static const struct {
+    uint64_t av_ch_bit;
+    uint32_t channel_bit;
+} mov_av_channel_bit_map[] = {
+    { AV_CH_FRONT_LEFT,            (1<< 0) }, // kAudioChannelBit_Left
+    { AV_CH_FRONT_RIGHT,           (1<< 1) }, // kAudioChannelBit_Right
+    { AV_CH_FRONT_CENTER,          (1<< 2) }, // kAudioChannelBit_Center
+    { AV_CH_LOW_FREQUENCY,         (1<< 3) }, // kAudioChannelBit_LFEScreen
+    { AV_CH_SIDE_LEFT,             (1<< 4) }, // kAudioChannelBit_LeftSurround
+    { AV_CH_SIDE_RIGHT,            (1<< 5) }, // kAudioChannelBit_RightSurround
+    { AV_CH_FRONT_LEFT_OF_CENTER,  (1<< 6) }, // kAudioChannelBit_LeftCenter
+    { AV_CH_FRONT_RIGHT_OF_CENTER, (1<< 7) }, // kAudioChannelBit_RightCenter
+    { AV_CH_BACK_CENTER,           (1<< 8) }, // kAudioChannelBit_CenterSurround
+    { AV_CH_SURROUND_DIRECT_LEFT,  (1<< 9) }, // kAudioChannelBit_LeftSurroundDirect
+    { AV_CH_SURROUND_DIRECT_RIGHT, (1<<10) }, // kAudioChannelBit_RightSurroundDirect
+    { AV_CH_TOP_CENTER,            (1<<11) }, // kAudioChannelBit_TopCenterSurround
+    { AV_CH_TOP_FRONT_LEFT,        (1<<12) }, // kAudioChannelBit_VerticalHeightLeft
+    { AV_CH_TOP_FRONT_CENTER,      (1<<13) }, // kAudioChannelBit_VerticalHeightCenter
+    { AV_CH_TOP_FRONT_RIGHT,       (1<<14) }, // kAudioChannelBit_VerticalHeightRight
+    { AV_CH_TOP_BACK_LEFT,         (1<<15) }, // kAudioChannelBit_TopBackLeft
+    { AV_CH_TOP_BACK_CENTER,       (1<<16) }, // kAudioChannelBit_TopBackCenter
+    { AV_CH_TOP_BACK_RIGHT,        (1<<17) }, // kAudioChannelBit_TopBackRight
+    { AV_CH_TOP_SIDE_LEFT,         (1<<21) }, // kAudioChannelBit_LeftTopMiddle
+    { AV_CH_TOP_SIDE_RIGHT,        (1<<23) }, // kAudioChannelBit_RightTopMiddle
+    /* The following have no exact counterparts */
+    { 0,                           (1<<24) }, // kAudioChannelBit_LeftTopRear
+    { 0,                           (1<<25) }, // kAudioChannelBit_CenterTopRear
+    { 0,                           (1<<26) }, // kAudioChannelBit_RightTopRear
+    { 0,                                 0 }
+};
+
+static uint32_t mov_get_chan_bitmap_for_layout_mask(uint64_t mask) {
+
+    uint32_t channel_bitmap = 0;
+    uint64_t unaccounted = mask;
+    for (int i = 0; mov_av_channel_bit_map[i].av_ch_bit != 0; i++) {
+        if (mask & mov_av_channel_bit_map[i].av_ch_bit) {
+            channel_bitmap |= mov_av_channel_bit_map[i].channel_bit;
+            unaccounted &= ~mov_av_channel_bit_map[i].av_ch_bit;
+        }
+    }
+    if (unaccounted)
+        return 0;
+    return channel_bitmap;
+}
+
+static uint64_t mov_get_chan_layout_mask_for_bitmap(uint32_t bitmap) {
+    uint64_t av_ch_layout_mask = 0;
+    uint32_t unaccounted = bitmap;
+    for (int i = 0; mov_av_channel_bit_map[i].av_ch_bit != 0; i++) {
+        if (bitmap & mov_av_channel_bit_map[i].channel_bit) {
+            av_ch_layout_mask |= mov_av_channel_bit_map[i].av_ch_bit;
+            unaccounted &= ~mov_av_channel_bit_map[i].channel_bit;
+        }
+    }
+    if (unaccounted)
+        return 0;
+    return av_ch_layout_mask;
+}
+
 static int is_layout_valid_for_tag(const AVChannelLayout *ch_layout, uint32_t tag, const struct MovChannelLayoutMap *map)
 {
     const struct MovChannelLayoutMap *layout_map;
@@ -578,9 +638,10 @@ int ff_mov_get_channel_layout_tag(const AVCodecParameters *par,
                 return 0;
             }
 
-            if (par->ch_layout.u.mask < 0x40000) {
+            uint32_t channel_bitmap = mov_get_chan_bitmap_for_layout_mask(par->ch_layout.u.mask);
+            if (channel_bitmap) {
                 *layout = MOV_CH_LAYOUT_USE_BITMAP;
-                *bitmap = (uint32_t)par->ch_layout.u.mask;
+                *bitmap = channel_bitmap;
                 return 0;
             }
         } else if (par->ch_layout.order == AV_CHANNEL_ORDER_UNSPEC)
@@ -706,9 +767,10 @@ int ff_mov_read_chan(AVFormatContext *s, AVIOContext *pb, AVStream *st,
         *ch_layout = tmp;
     } else if (layout_tag == MOV_CH_LAYOUT_USE_BITMAP) {
         if (!ch_layout->nb_channels || av_popcount(bitmap) == ch_layout->nb_channels) {
-            if (bitmap < 0x40000) {
+            uint64_t av_ch_layout_mask = mov_get_chan_layout_mask_for_bitmap(bitmap);
+            if (av_ch_layout_mask) {
                 av_channel_layout_uninit(ch_layout);
-                av_channel_layout_from_mask(ch_layout, bitmap);
+                av_channel_layout_from_mask(ch_layout, av_ch_layout_mask);
             }
         } else {
             av_log(s, AV_LOG_WARNING, "ignoring channel layout bitmap with %d channels because number of channels is %d\n",
