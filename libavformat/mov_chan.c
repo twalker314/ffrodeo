@@ -208,6 +208,7 @@ struct MovChannelLayoutMap {
     CHLIST04( MOV_CH_LAYOUT_MPEG_4_0_B,           C,   L,   R,    Cs    )\
     CHLIST04( MOV_CH_LAYOUT_AC3_3_1,              L,   C,   R,    Cs    )\
     CHLIST04( MOV_CH_LAYOUT_ITU_2_2,              L,   R,   Ls,   Rs    )\
+    CHLIST04( MOV_CH_LAYOUT_WAVE_4_0_B,           L,   R,   Rls,  Rrs   )\
     CHLIST04( MOV_CH_LAYOUT_DVD_5,                L,   R,   LFE,  Cs    )\
     CHLIST04( MOV_CH_LAYOUT_AC3_2_1_1,            L,   R,   Cs,   LFE   )\
     CHLIST04( MOV_CH_LAYOUT_DVD_10,               L,   R,   C,    LFE   )\
@@ -215,6 +216,7 @@ struct MovChannelLayoutMap {
     CHLIST04( MOV_CH_LAYOUT_DTS_3_1,              C,   L,   R,    LFE   )\
     CHLIST05( MOV_CH_LAYOUT_PENTAGONAL,           L,   R,   Rls,  Rrs,  C     )\
     CHLIST05( MOV_CH_LAYOUT_MPEG_5_0_A,           L,   R,   C,    Ls,   Rs    )\
+    CHLIST05( MOV_CH_LAYOUT_WAVE_5_0_B,           L,   R,   C,    Rls,  Rrs   )\
     CHLIST05( MOV_CH_LAYOUT_MPEG_5_0_B,           L,   R,   Ls,   Rs,   C     )\
     CHLIST05( MOV_CH_LAYOUT_MPEG_5_0_C,           L,   C,   R,    Ls,   Rs    )\
     CHLIST05( MOV_CH_LAYOUT_MPEG_5_0_D,           C,   L,   R,    Ls,   Rs    )\
@@ -226,6 +228,7 @@ struct MovChannelLayoutMap {
     CHLIST06( MOV_CH_LAYOUT_HEXAGONAL,            L,   R,   Rls,  Rrs,  C,    Cs     )\
     CHLIST06( MOV_CH_LAYOUT_DTS_6_0_C,            C,   Cs,  L,    R,    Rls,  Rrs    )\
     CHLIST06( MOV_CH_LAYOUT_MPEG_5_1_A,           L,   R,   C,    LFE,  Ls,   Rs     )\
+    CHLIST06( MOV_CH_LAYOUT_WAVE_5_1_B,           L,   R,   C,    LFE,  Rls,  Rrs    )\
     CHLIST06( MOV_CH_LAYOUT_MPEG_5_1_B,           L,   R,   Ls,   Rs,   C,    LFE    )\
     CHLIST06( MOV_CH_LAYOUT_MPEG_5_1_C,           L,   C,   R,    Ls,   Rs,   LFE    )\
     CHLIST06( MOV_CH_LAYOUT_MPEG_5_1_D,           C,   L,   R,    Ls,   Rs,   LFE    )\
@@ -235,6 +238,7 @@ struct MovChannelLayoutMap {
     CHLIST06( MOV_CH_LAYOUT_DTS_6_0_A,            Lc,  Rc,  L,    R,    Ls,   Rs     )\
     CHLIST06( MOV_CH_LAYOUT_DTS_6_0_B,            C,   L,   R,    Rls,  Rrs,  Ts     )\
     CHLIST07( MOV_CH_LAYOUT_MPEG_6_1_A,           L,   R,   C,    LFE,  Ls,   Rs,    Cs    )\
+    CHLIST07( MOV_CH_LAYOUT_WAVE_6_1,             L,   R,   C,    LFE,  Cs,   Ls,    Rs    )\
     CHLIST07( MOV_CH_LAYOUT_AAC_6_1,              C,   L,   R,    Ls,   Rs,   Cs,    LFE   )\
     CHLIST07( MOV_CH_LAYOUT_EAC3_6_1_A,           L,   C,   R,    Ls,   Rs,   LFE,   Cs    )\
     CHLIST07( MOV_CH_LAYOUT_DTS_6_1_D,            C,   L,   R,    Ls,   Rs,   LFE,   Cs    )\
@@ -257,6 +261,7 @@ struct MovChannelLayoutMap {
     CHLIST08( MOV_CH_LAYOUT_EAC3_7_1_B,           L,   C,   R,    Ls,   Rs,   LFE,   Lc,   Rc    )\
     CHLIST08( MOV_CH_LAYOUT_DTS_7_1,              Lc,  C,   Rc,   L,    R,    Ls,    Rs,   LFE   )\
     CHLIST08( MOV_CH_LAYOUT_MPEG_7_1_C,           L,   R,   C,    LFE,  Ls,   Rs,    Rls,  Rrs   )\
+    CHLIST08( MOV_CH_LAYOUT_WAVE_7_1,             L,   R,   C,    LFE,  Rls,  Rrs,   Ls,   Rs    )\
     CHLIST08( MOV_CH_LAYOUT_EAC3_7_1_A,           L,   C,   R,    Ls,   Rs,   LFE,   Rls,  Rrs   )\
     CHLIST08( MOV_CH_LAYOUT_SMPTE_DTV,            L,   R,   C,    LFE,  Ls,   Rs,    Lt,   Rt    )\
     CHLIST08( MOV_CH_LAYOUT_EAC3_7_1_C,           L,   C,   R,    Ls,   Rs,   LFE,   Lsd,  Rsd   )\
@@ -267,6 +272,7 @@ struct MovChannelLayoutMap {
     CHLIST08( MOV_CH_LAYOUT_EAC3_7_1_H,           L,   C,   R,    Ls,   Rs,   LFE,   Ts,   Vhc   )\
     CHLIST08( MOV_CH_LAYOUT_DTS_8_0_A,            Lc,  Rc,  L,    R,    Ls,   Rs,    Rls,  Rrs   )\
     CHLIST08( MOV_CH_LAYOUT_DTS_8_0_B,            Lc,  C,   Rc,   L,    R,    Ls,    Cs,   Rs    )\
+    CHLIST08( MOV_CH_LAYOUT_CICP_14,              L,   R,   C,    LFE,  Ls,   Rs,    Vhl,  Vhr   )\
     CHLIST09( MOV_CH_LAYOUT_DTS_8_1_A,            Lc,  Rc,  L,    R,    Ls,   Rs,    Rls,  Rrs,  LFE   )\
     CHLIST09( MOV_CH_LAYOUT_DTS_8_1_B,            Lc,  C,   Rc,   L,    R,    Ls,    Cs,   Rs,   LFE   )\
     CHLIST16( MOV_CH_LAYOUT_TMH_10_2_STD,         L,   R,   C,    Vhc,  Lsd,  Rsd,   Ls,   Rs,   Vhl,  Vhr,  Lw,  Rw,  Csd,  Cs,  LFE,  LFE2  )\
