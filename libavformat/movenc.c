@@ -1035,7 +1035,7 @@ static int mov_write_chan_tag(AVFormatContext *s, AVIOContext *pb, MOVTrack *tra
 
     num_desc = layout_tag ? 0 : track->par->ch_layout.nb_channels;
 
-    avio_wb32(pb, 0);           // Size
+    avio_wb32(pb, 0);           // Size //fixme: can't we write it properly??? check QTFF specification, also why size before fourcc??
     ffio_wfourcc(pb, "chan");   // Type
     avio_w8(pb, 0);             // Version
     avio_wb24(pb, 0);           // Flags
