@@ -22,6 +22,7 @@
 #include <stdint.h>
 
 #include "libavutil/intfloat.h"
+#include "libavutil/mem.h"
 #include "libavutil/opt.h"
 #include "libavcodec/packet_internal.h"
 #include "avformat.h"
@@ -30,6 +31,7 @@
 #include "avio_internal.h"
 #include "isom.h"
 #include "id3v2.h"
+#include "mov_chan.h"
 #include "mux.h"
 
 typedef struct AIFFOutputContext {
@@ -190,9 +192,35 @@ static int aiff_write_header(AVFormatContext *s)
     /* CHAN chunk; a decoder may use the channel count when parsing this chunk,
      * so let's write it after the COMM chunk which indicates said channel count. */
     if (par->ch_layout.order == AV_CHANNEL_ORDER_NATIVE && par->ch_layout.nb_channels > 2) {
-        ffio_wfourcc(pb, "CHAN");
-        avio_wb32(pb, 12);
-        ff_mov_write_chan(pb, par->ch_layout.u.mask);
+        uint32_t layout_tag, bitmap, *channel_desc = NULL;
+        int ret, have_chan_data = 1;
+
+        ret = ff_mov_get_channel_layout_tag(par, &layout_tag,
+                                            &bitmap, &channel_desc);
+
+        if (ret < 0) {
+            if (ret == AVERROR(ENOSYS)) {
+                av_log(s, AV_LOG_WARNING, "not writing 'chan' tag due to "
+                       "lack of channel information\n");
+            }
+            have_chan_data = 0;
+        } else if (layout_tag == MOV_CH_LAYOUT_UNKNOWN) {
+            /* no predefined tag found + ch_layout in AV_CHANNEL_ORDER_NATIVE
+             * but bitstream channels not actually in native order */
+            have_chan_data = 0;
+        }
+
+        if (have_chan_data) {
+            int num_desc = layout_tag ? 0 : par->ch_layout.nb_channels;
+            int size = ff_mov_write_audio_channel_layout(NULL, layout_tag, bitmap,
+                                                         channel_desc, num_desc);
+            ffio_wfourcc(pb, "CHAN");
+            avio_wb32(pb, size);
+            ff_mov_write_audio_channel_layout(pb, layout_tag, bitmap,
+                                              channel_desc, num_desc);
+        }
+
+        av_free(channel_desc);
     }
 
     /* Sound data chunk */
