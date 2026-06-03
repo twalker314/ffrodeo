@@ -1039,7 +1039,8 @@ static int mov_write_chan_tag(AVFormatContext *s, AVIOContext *pb, MOVTrack *tra
     ffio_wfourcc(pb, "chan");   // Type
     avio_w8(pb, 0);             // Version
     avio_wb24(pb, 0);           // Flags
-    ff_mov_write_audio_channel_layout(pb, layout_tag, bitmap, channel_desc, num_desc);
+    ff_mov_write_audio_channel_layout(pb, layout_tag, bitmap,
+                                      channel_desc, num_desc);
 
     av_free(channel_desc);
 
