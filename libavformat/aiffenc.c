@@ -22,6 +22,7 @@
 #include <stdint.h>
 
 #include "libavutil/intfloat.h"
+#include "libavutil/mem.h"
 #include "libavutil/opt.h"
 #include "libavcodec/packet_internal.h"
 #include "avformat.h"
@@ -192,7 +193,7 @@ static int aiff_write_header(AVFormatContext *s)
      * used by ff_mov_read_chan when the CHAN chunk contains channel descriptions.
      * afconvert does the same when writing AIFF headers (COMM first, then CHAN). */
     if (par->ch_layout.order == AV_CHANNEL_ORDER_NATIVE && par->ch_layout.nb_channels > 2) {
-        uint32_t layout_tag, bitmap, *channel_desc;
+        uint32_t layout_tag, bitmap, *channel_desc = NULL;
         int ret, have_chan_data = 1;
 
         ret = ff_mov_get_channel_layout_tag(par, &layout_tag,
@@ -216,8 +217,11 @@ static int aiff_write_header(AVFormatContext *s)
                                                          channel_desc, num_desc);
             ffio_wfourcc(pb, "CHAN");
             avio_wb32(pb, size);
-            ff_mov_write_audio_channel_layout(pb, layout_tag, bitmap, channel_desc, num_desc);
+            ff_mov_write_audio_channel_layout(pb, layout_tag, bitmap,
+                                              channel_desc, num_desc);
         }
+
+        av_free(channel_desc);
     }
 
     /* Sound data chunk */
