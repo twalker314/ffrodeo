@@ -189,9 +189,8 @@ static int aiff_write_header(AVFormatContext *s)
         avio_write(pb, par->extradata, par->extradata_size);
     }
 
-    /* must write CHAN chunk after COMM, as the latter contains the channel count,
-     * used by ff_mov_read_chan when the CHAN chunk contains channel descriptions.
-     * afconvert does the same when writing AIFF headers (COMM first, then CHAN). */
+    /* CHAN chunk; a decoder may use the channel count when parsing this chunk,
+     * so let's write it after the COMM chunk which indicates said channel count. */
     if (par->ch_layout.order == AV_CHANNEL_ORDER_NATIVE && par->ch_layout.nb_channels > 2) {
         uint32_t layout_tag, bitmap, *channel_desc = NULL;
         int ret, have_chan_data = 1;

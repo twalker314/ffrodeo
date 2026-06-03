@@ -159,7 +159,7 @@ int ff_mov_get_channel_layout_tag(const AVCodecParameters *par,
 
 /**
  * Write an AudioChannelLayout structure for AIFF, CAF or MOV.
- * If the input AVIOContext is NULL, just return the required size for the strcuture.
+ * If the input AVIOContext is NULL, returns the size of the AudioChannelLayout.
  *
  * @param[in] pb AVIOContext
  * @param[in] layout_tag AudioChannelLayoutTag
