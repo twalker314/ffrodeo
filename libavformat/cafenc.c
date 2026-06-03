@@ -187,7 +187,7 @@ static int caf_write_header(AVFormatContext *s)
     avio_wb32(pb, av_get_bits_per_sample(par->codec_id)); //< mBitsPerChannel
 
     if (par->ch_layout.order == AV_CHANNEL_ORDER_NATIVE) {
-        uint32_t layout_tag, bitmap, *channel_desc;
+        uint32_t layout_tag, bitmap, *channel_desc = NULL;
         int ret, have_chan_data = 1;
 
         ret = ff_mov_get_channel_layout_tag(par, &layout_tag,
@@ -211,8 +211,11 @@ static int caf_write_header(AVFormatContext *s)
                                                          channel_desc, num_desc);
             ffio_wfourcc(pb, "chan");
             avio_wb64(pb, size);
-            ff_mov_write_audio_channel_layout(pb, layout_tag, bitmap, channel_desc, num_desc);
+            ff_mov_write_audio_channel_layout(pb, layout_tag, bitmap,
+                                              channel_desc, num_desc);
         }
+
+        av_free(channel_desc);
     }
 
     if (par->codec_id == AV_CODEC_ID_ALAC) {
