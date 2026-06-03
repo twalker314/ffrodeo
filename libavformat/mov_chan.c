@@ -97,6 +97,7 @@ enum {
     c_VI     = AV_CHAN_NONE,                    // kAudioChannelLabel_Narration
     c_Haptic = AV_CHAN_NONE,                    // kAudioChannelLabel_Haptic
     c_Ltr    = AV_CHAN_NONE,                    // kAudioChannelLabel_LeftTopRear
+    c_Ctr    = AV_CHAN_NONE,                    // kAudioChannelLabel_CenterTopRear
     c_Rtr    = AV_CHAN_NONE,                    // kAudioChannelLabel_RightTopRear
 };
 
