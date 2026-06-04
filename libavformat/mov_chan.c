@@ -471,10 +471,10 @@ static const struct {
     { AV_CHAN_BACK_CENTER,            9 }, // kAudioChannelLabel_CenterSurround
     { AV_CHAN_SIDE_LEFT,              5 }, // kAudioChannelLabel_LeftSurround
     { AV_CHAN_SIDE_RIGHT,             6 }, // kAudioChannelLabel_RightSurround
-    { AV_CHAN_TOP_CENTER,            12 }, // kAudioChannelLabel_TopCenterSurround
-    { AV_CHAN_TOP_FRONT_LEFT,        13 }, // kAudioChannelLabel_VerticalHeightLeft
-    { AV_CHAN_TOP_FRONT_CENTER,      14 }, // kAudioChannelLabel_VerticalHeightCenter
-    { AV_CHAN_TOP_FRONT_RIGHT,       15 }, // kAudioChannelLabel_VerticalHeightRight
+    { AV_CHAN_TOP_CENTER,            12 }, // kAudioChannelLabel_TopCenterSurround/CenterTopMiddle
+    { AV_CHAN_TOP_FRONT_LEFT,        13 }, // kAudioChannelLabel_VerticalHeightLeft/LeftTopFront
+    { AV_CHAN_TOP_FRONT_CENTER,      14 }, // kAudioChannelLabel_VerticalHeightCenter/CenterTopFront
+    { AV_CHAN_TOP_FRONT_RIGHT,       15 }, // kAudioChannelLabel_VerticalHeightRight/RightTopFront
     { AV_CHAN_TOP_BACK_LEFT,         16 }, // kAudioChannelLabel_TopBackLeft
     { AV_CHAN_TOP_BACK_CENTER,       17 }, // kAudioChannelLabel_TopBackCenter
     { AV_CHAN_TOP_BACK_RIGHT,        18 }, // kAudioChannelLabel_TopBackRight
@@ -490,7 +490,21 @@ static const struct {
     { AV_CHAN_BOTTOM_FRONT_CENTER,   59 }, // kAudioChannelLabel_CenterBottom
     { AV_CHAN_BOTTOM_FRONT_LEFT,     57 }, // kAudioChannelLabel_LeftBottom
     { AV_CHAN_BOTTOM_FRONT_RIGHT,    58 }, // kAudioChannelLabel_RightBottom
-    { AV_CHAN_NONE,                   0 }
+    { AV_CHAN_SIDE_SURROUND_LEFT,    55 }, // kAudioChannelLabel_LeftSideSurround
+    { AV_CHAN_SIDE_SURROUND_RIGHT,   56 }, // kAudioChannelLabel_RightSideSurround
+    { AV_CHAN_TOP_SURROUND_LEFT,     60 }, // kAudioChannelLabel_LeftTopSurround
+    { AV_CHAN_TOP_SURROUND_RIGHT,    61 }, // kAudioChannelLabel_RightTopSurround
+    { AV_CHAN_BINAURAL_LEFT,        301 }, // kAudioChannelLabel_HeadphonesLeft
+    { AV_CHAN_BINAURAL_RIGHT,       302 }, // kAudioChannelLabel_HeadphonesRight
+    /* The following have no exact counterparts */
+    { AV_CHAN_UNKNOWN,               40 }, // kAudioChannelLabel_HearingImpaired
+    { AV_CHAN_UNKNOWN,               41 }, // kAudioChannelLabel_Narration
+    { AV_CHAN_UNKNOWN,               44 }, // kAudioChannelLabel_CenterSurroundDirect
+    { AV_CHAN_UNKNOWN,               45 }, // kAudioChannelLabel_Haptic
+    { AV_CHAN_UNKNOWN,               52 }, // kAudioChannelLabel_LeftTopRear
+    { AV_CHAN_UNKNOWN,               53 }, // kAudioChannelLabel_CenterTopRear
+    { AV_CHAN_UNKNOWN,               54 }, // kAudioChannelLabel_RightTopRear
+    { AV_CHAN_NONE,                   0 },
 };
 
 static enum AVChannel mov_get_channel_id(uint32_t label)
