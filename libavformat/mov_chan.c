@@ -515,16 +515,36 @@ static const struct {
     { AV_CHAN_SIDE_SURROUND_RIGHT,   56 }, // kAudioChannelLabel_RightSideSurround
     { AV_CHAN_TOP_SURROUND_LEFT,     60 }, // kAudioChannelLabel_LeftTopSurround
     { AV_CHAN_TOP_SURROUND_RIGHT,    61 }, // kAudioChannelLabel_RightTopSurround
-    { AV_CHAN_BINAURAL_LEFT,        301 }, // kAudioChannelLabel_HeadphonesLeft
-    { AV_CHAN_BINAURAL_RIGHT,       302 }, // kAudioChannelLabel_HeadphonesRight
+    { AV_CHAN_BINAURAL_LEFT,        208 }, // kAudioChannelLabel_BinauralLeft
+    { AV_CHAN_BINAURAL_RIGHT,       209 }, // kAudioChannelLabel_BinauralRight
+    /* Ambisonic */
+    { AV_CHAN_UNKNOWN,              200 }, // kAudioChannelLabel_Ambisonic_W
+    { AV_CHAN_UNKNOWN,              201 }, // kAudioChannelLabel_Ambisonic_X
+    { AV_CHAN_UNKNOWN,              202 }, // kAudioChannelLabel_Ambisonic_Y
+    { AV_CHAN_UNKNOWN,              203 }, // kAudioChannelLabel_Ambisonic_Z
     /* The following have no exact counterparts */
     { AV_CHAN_UNKNOWN,               40 }, // kAudioChannelLabel_HearingImpaired
     { AV_CHAN_UNKNOWN,               41 }, // kAudioChannelLabel_Narration
+    { AV_CHAN_UNKNOWN,               42 }, // kAudioChannelLabel_Mono
+    { AV_CHAN_UNKNOWN,               43 }, // kAudioChannelLabel_DialogCentricMix
     { AV_CHAN_UNKNOWN,               44 }, // kAudioChannelLabel_CenterSurroundDirect
     { AV_CHAN_UNKNOWN,               45 }, // kAudioChannelLabel_Haptic
     { AV_CHAN_UNKNOWN,               52 }, // kAudioChannelLabel_LeftTopRear
     { AV_CHAN_UNKNOWN,               53 }, // kAudioChannelLabel_CenterTopRear
     { AV_CHAN_UNKNOWN,               54 }, // kAudioChannelLabel_RightTopRear
+    { AV_CHAN_UNKNOWN,               62 }, // kAudioChannelLabel_LFE3
+    { AV_CHAN_UNKNOWN,               63 }, // kAudioChannelLabel_LeftBackSurround
+    { AV_CHAN_UNKNOWN,               64 }, // kAudioChannelLabel_RightBackSurround
+    { AV_CHAN_UNKNOWN,               65 }, // kAudioChannelLabel_LeftEdgeOfScreen
+    { AV_CHAN_UNKNOWN,               66 }, // kAudioChannelLabel_RightEdgeOfScreen
+    { AV_CHAN_UNKNOWN,              204 }, // kAudioChannelLabel_MS_Mid
+    { AV_CHAN_UNKNOWN,              205 }, // kAudioChannelLabel_MS_Side
+    { AV_CHAN_UNKNOWN,              206 }, // kAudioChannelLabel_XY_X
+    { AV_CHAN_UNKNOWN,              207 }, // kAudioChannelLabel_XY_Y
+    { AV_CHAN_UNKNOWN,              301 }, // kAudioChannelLabel_HeadphonesLeft
+    { AV_CHAN_UNKNOWN,              302 }, // kAudioChannelLabel_HeadphonesRight
+    { AV_CHAN_UNKNOWN,              304 }, // kAudioChannelLabel_ClickTrack
+    { AV_CHAN_UNKNOWN,              305 }, // kAudioChannelLabel_ForeignLanguage
     { AV_CHAN_NONE,                   0 },
 };
 
@@ -540,10 +560,11 @@ static enum AVChannel mov_get_channel_id(uint32_t label)
 
 static uint32_t mov_get_channel_label(enum AVChannel channel)
 {
-    for (int i = 0; mov_av_channel_map[i].id != AV_CHAN_NONE; i++)
+    for (int i = 0; mov_av_channel_map[i].id != AV_CHAN_UNKNOWN; i++)
         if (channel == mov_av_channel_map[i].id)
             return mov_av_channel_map[i].label;
-    return 0;
+    return 0; // kAudioChannelLabel_Unused
+    // also available: 0xFFFFFFFF kAudioChannelLabel_Unknown
 }
 
 /*
