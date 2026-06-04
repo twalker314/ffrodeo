@@ -514,7 +514,7 @@ static uint32_t mov_get_channel_label(enum AVChannel channel)
 static const struct {
     uint64_t av_ch_bit;
     uint32_t channel_bit;
-} mov_av_channel_bit_map[] = {
+} mov_av_ch_map[] = {
     { AV_CH_FRONT_LEFT,            (1<< 0) }, // kAudioChannelBit_Left
     { AV_CH_FRONT_RIGHT,           (1<< 1) }, // kAudioChannelBit_Right
     { AV_CH_FRONT_CENTER,          (1<< 2) }, // kAudioChannelBit_Center
@@ -543,13 +543,12 @@ static const struct {
 };
 
 static uint32_t mov_get_chan_bitmap_for_layout_mask(uint64_t mask) {
-
     uint32_t channel_bitmap = 0;
     uint64_t unaccounted = mask;
-    for (int i = 0; mov_av_channel_bit_map[i].av_ch_bit != 0; i++) {
-        if (mask & mov_av_channel_bit_map[i].av_ch_bit) {
-            channel_bitmap |= mov_av_channel_bit_map[i].channel_bit;
-            unaccounted &= ~mov_av_channel_bit_map[i].av_ch_bit;
+    for (int i = 0; mov_av_ch_map[i].av_ch_bit != 0; i++) {
+        if (mask & mov_av_ch_map[i].av_ch_bit) {
+            channel_bitmap |= mov_av_ch_map[i].channel_bit;
+            unaccounted &= ~mov_av_ch_map[i].av_ch_bit;
         }
     }
     if (unaccounted)
@@ -560,10 +559,10 @@ static uint32_t mov_get_chan_bitmap_for_layout_mask(uint64_t mask) {
 static uint64_t mov_get_chan_layout_mask_for_bitmap(uint32_t bitmap) {
     uint64_t av_ch_layout_mask = 0;
     uint32_t unaccounted = bitmap;
-    for (int i = 0; mov_av_channel_bit_map[i].av_ch_bit != 0; i++) {
-        if (bitmap & mov_av_channel_bit_map[i].channel_bit) {
-            av_ch_layout_mask |= mov_av_channel_bit_map[i].av_ch_bit;
-            unaccounted &= ~mov_av_channel_bit_map[i].channel_bit;
+    for (int i = 0; mov_av_ch_map[i].av_ch_bit != 0; i++) {
+        if (bitmap & mov_av_ch_map[i].channel_bit) {
+            av_ch_layout_mask |= mov_av_ch_map[i].av_ch_bit;
+            unaccounted &= ~mov_av_ch_map[i].channel_bit;
         }
     }
     if (unaccounted)
