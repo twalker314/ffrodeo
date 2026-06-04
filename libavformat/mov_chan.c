@@ -511,6 +511,16 @@ static uint32_t mov_get_channel_label(enum AVChannel channel)
     return 0;
 }
 
+/*
+ * table in libavutil native channel order
+ *
+ * For consistency with:
+ * - AudioChannelLayoutTag lookup
+ * - AudioChannelLabel import/export
+ * BL  == Rls, BR  == Rrs (no kAudioChannelBit)
+ * SL  == Ls,  SR  == Rs  (native vs. AudioChannelBitmap order mismatch)
+ * SDL == Lsd, SDR == Rsd (native vs. AudioChannelBitmap order mismatch)
+ */
 static const struct {
     uint64_t av_ch_bit;
     uint32_t channel_bit;
@@ -519,22 +529,40 @@ static const struct {
     { AV_CH_FRONT_RIGHT,           (1<< 1) }, // kAudioChannelBit_Right
     { AV_CH_FRONT_CENTER,          (1<< 2) }, // kAudioChannelBit_Center
     { AV_CH_LOW_FREQUENCY,         (1<< 3) }, // kAudioChannelBit_LFEScreen
-    { AV_CH_SIDE_LEFT,             (1<< 4) }, // kAudioChannelBit_LeftSurround
-    { AV_CH_SIDE_RIGHT,            (1<< 5) }, // kAudioChannelBit_RightSurround
+//  { AV_CH_BACK_LEFT,                   0 },
+//  { AV_CH_BACK_RIGHT,                  0 },
     { AV_CH_FRONT_LEFT_OF_CENTER,  (1<< 6) }, // kAudioChannelBit_LeftCenter
     { AV_CH_FRONT_RIGHT_OF_CENTER, (1<< 7) }, // kAudioChannelBit_RightCenter
     { AV_CH_BACK_CENTER,           (1<< 8) }, // kAudioChannelBit_CenterSurround
-    { AV_CH_SURROUND_DIRECT_LEFT,  (1<< 9) }, // kAudioChannelBit_LeftSurroundDirect
-    { AV_CH_SURROUND_DIRECT_RIGHT, (1<<10) }, // kAudioChannelBit_RightSurroundDirect
-    { AV_CH_TOP_CENTER,            (1<<11) }, // kAudioChannelBit_TopCenterSurround
-    { AV_CH_TOP_FRONT_LEFT,        (1<<12) }, // kAudioChannelBit_VerticalHeightLeft
-    { AV_CH_TOP_FRONT_CENTER,      (1<<13) }, // kAudioChannelBit_VerticalHeightCenter
-    { AV_CH_TOP_FRONT_RIGHT,       (1<<14) }, // kAudioChannelBit_VerticalHeightRight
+    /* 9, 10 < 17: cannot map without breaking native channel order */
+//  { AV_CH_SIDE_LEFT,             (1<< 4) }, // kAudioChannelBit_LeftSurround
+//  { AV_CH_SIDE_RIGHT,            (1<< 5) }, // kAudioChannelBit_RightSurround
+    { AV_CH_TOP_CENTER,            (1<<11) }, // kAudioChannelBit_TopCenterSurround/CenterTopMiddle
+    { AV_CH_TOP_FRONT_LEFT,        (1<<12) }, // kAudioChannelBit_VerticalHeightLeft/LeftTopFront
+    { AV_CH_TOP_FRONT_CENTER,      (1<<13) }, // kAudioChannelBit_VerticalHeightCenter/CenterTopFront
+    { AV_CH_TOP_FRONT_RIGHT,       (1<<14) }, // kAudioChannelBit_VerticalHeightRight/RightTopFront
     { AV_CH_TOP_BACK_LEFT,         (1<<15) }, // kAudioChannelBit_TopBackLeft
     { AV_CH_TOP_BACK_CENTER,       (1<<16) }, // kAudioChannelBit_TopBackCenter
     { AV_CH_TOP_BACK_RIGHT,        (1<<17) }, // kAudioChannelBit_TopBackRight
+//  { AV_CH_STEREO_LEFT,                 0 },
+//  { AV_CH_STEREO_RIGHT,                0 },
+//  { AV_CH_WIDE_LEFT,                   0 },
+//  { AV_CH_WIDE_RIGHT,                  0 },
+    /* 9, 10 < 17: cannot map without breaking native channel order */
+//  { AV_CH_SURROUND_DIRECT_LEFT,  (1<< 9) }, // kAudioChannelBit_LeftSurroundDirect
+//  { AV_CH_SURROUND_DIRECT_RIGHT, (1<<10) }, // kAudioChannelBit_RightSurroundDirect
+//  { AV_CH_LOW_FREQUENCY_2,             0 },
     { AV_CH_TOP_SIDE_LEFT,         (1<<21) }, // kAudioChannelBit_LeftTopMiddle
     { AV_CH_TOP_SIDE_RIGHT,        (1<<23) }, // kAudioChannelBit_RightTopMiddle
+//  { AV_CH_BOTTOM_FRONT_CENTER,         0 },
+//  { AV_CH_BOTTOM_FRONT_LEFT,           0 },
+//  { AV_CH_BOTTOM_FRONT_RIGHT,          0 },
+//  { AV_CH_SIDE_SURROUND_LEFT,          0 },
+//  { AV_CH_SIDE_SURROUND_RIGHT,         0 },
+//  { AV_CH_TOP_SURROUND_LEFT,           0 },
+//  { AV_CH_TOP_SURROUND_RIGHT,          0 },
+//  { AV_CH_BINAURAL_LEFT,               0 },
+//  { AV_CH_BINAURAL_RIGHT,              0 },
     /* The following have no exact counterparts */
     { 0,                           (1<<24) }, // kAudioChannelBit_LeftTopRear
     { 0,                           (1<<25) }, // kAudioChannelBit_CenterTopRear
