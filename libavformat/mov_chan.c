@@ -68,10 +68,10 @@ enum {
     c_Cs     = AV_CHAN_BACK_CENTER,             // kAudioChannelLabel_CenterSurround
     c_Ls     = AV_CHAN_SIDE_LEFT,               // kAudioChannelLabel_LeftSurround
     c_Rs     = AV_CHAN_SIDE_RIGHT,              // kAudioChannelLabel_RightSurround
-    c_Ts     = AV_CHAN_TOP_CENTER,              // kAudioChannelLabel_TopCenterSurround
-    c_Vhl    = AV_CHAN_TOP_FRONT_LEFT,          // kAudioChannelLabel_VerticalHeightLeft
-    c_Vhc    = AV_CHAN_TOP_FRONT_CENTER,        // kAudioChannelLabel_VerticalHeightCenter
-    c_Vhr    = AV_CHAN_TOP_FRONT_RIGHT,         // kAudioChannelLabel_VerticalHeightRight
+    c_Ts     = AV_CHAN_TOP_CENTER,              // kAudioChannelLabel_TopCenterSurround/CenterTopMiddle
+    c_Vhl    = AV_CHAN_TOP_FRONT_LEFT,          // kAudioChannelLabel_VerticalHeightLeft/LeftTopFront
+    c_Vhc    = AV_CHAN_TOP_FRONT_CENTER,        // kAudioChannelLabel_VerticalHeightCenter/CenterTopFront
+    c_Vhr    = AV_CHAN_TOP_FRONT_RIGHT,         // kAudioChannelLabel_VerticalHeightRight/RightTopFront
     c_Tbl    = AV_CHAN_TOP_BACK_LEFT,           // kAudioChannelLabel_TopBackLeft
     c_Tbc    = AV_CHAN_TOP_BACK_CENTER,         // kAudioChannelLabel_TopBackCenter
     c_Tbr    = AV_CHAN_TOP_BACK_RIGHT,          // kAudioChannelLabel_TopBackRight
@@ -87,18 +87,39 @@ enum {
     c_Cb     = AV_CHAN_BOTTOM_FRONT_CENTER,     // kAudioChannelLabel_CenterBottom
     c_Lb     = AV_CHAN_BOTTOM_FRONT_LEFT,       // kAudioChannelLabel_LeftBottom
     c_Rb     = AV_CHAN_BOTTOM_FRONT_RIGHT,      // kAudioChannelLabel_RightBottom
+    c_Lss    = AV_CHAN_SIDE_SURROUND_LEFT,      // kAudioChannelLabel_LeftSideSurround
+    c_Rss    = AV_CHAN_SIDE_SURROUND_RIGHT,     // kAudioChannelLabel_RightSideSurround
+    c_Lts    = AV_CHAN_TOP_SURROUND_LEFT,       // kAudioChannelLabel_LeftTopSurround
+    c_Rts    = AV_CHAN_TOP_SURROUND_RIGHT,      // kAudioChannelLabel_RightTopSurround
+    c_Bil    = AV_CHAN_BINAURAL_LEFT,           // kAudioChannelLabel_BinauralLeft
+    c_Bir    = AV_CHAN_BINAURAL_RIGHT,          // kAudioChannelLabel_BinauralRight
     c_W      = AV_CHAN_AMBISONIC_BASE,          // kAudioChannelLabel_Ambisonic_W
     c_Y      = AV_CHAN_AMBISONIC_BASE + 1,      // kAudioChannelLabel_Ambisonic_Y
     c_Z      = AV_CHAN_AMBISONIC_BASE + 2,      // kAudioChannelLabel_Ambisonic_Z
     c_X      = AV_CHAN_AMBISONIC_BASE + 3,      // kAudioChannelLabel_Ambisonic_X
     /* The following have no exact counterparts */
-    c_Csd    = AV_CHAN_NONE,                    // kAudioChannelLabel_CenterSurroundDirect
     c_HI     = AV_CHAN_NONE,                    // kAudioChannelLabel_HearingImpaired
     c_VI     = AV_CHAN_NONE,                    // kAudioChannelLabel_Narration
+    c_Mono   = AV_CHAN_NONE,                    // kAudioChannelLabel_Mono
+    c_Dlg    = AV_CHAN_NONE,                    // kAudioChannelLabel_DialogCentricMix
+    c_Csd    = AV_CHAN_NONE,                    // kAudioChannelLabel_CenterSurroundDirect
     c_Haptic = AV_CHAN_NONE,                    // kAudioChannelLabel_Haptic
     c_Ltr    = AV_CHAN_NONE,                    // kAudioChannelLabel_LeftTopRear
     c_Ctr    = AV_CHAN_NONE,                    // kAudioChannelLabel_CenterTopRear
     c_Rtr    = AV_CHAN_NONE,                    // kAudioChannelLabel_RightTopRear
+    c_LFE3   = AV_CHAN_NONE,                    // kAudioChannelLabel_LFE3
+    c_Lbs    = AV_CHAN_NONE,                    // kAudioChannelLabel_LeftBackSurround
+    c_Rbs    = AV_CHAN_NONE,                    // kAudioChannelLabel_RightBackSurround
+    c_Leos   = AV_CHAN_NONE,                    // kAudioChannelLabel_LeftEdgeOfScreen
+    c_Reos   = AV_CHAN_NONE,                    // kAudioChannelLabel_RightEdgeOfScreen
+    c_Mid    = AV_CHAN_NONE,                    // kAudioChannelLabel_MS_Mid
+    c_Side   = AV_CHAN_NONE,                    // kAudioChannelLabel_MS_Side
+    c_XY_X   = AV_CHAN_NONE,                    // kAudioChannelLabel_XY_X
+    c_XY_Y   = AV_CHAN_NONE,                    // kAudioChannelLabel_XY_Y
+    c_phoneL = AV_CHAN_NONE,                    // kAudioChannelLabel_HeadphonesLeft
+    c_phoneR = AV_CHAN_NONE,                    // kAudioChannelLabel_HeadphonesRight
+    c_Click  = AV_CHAN_NONE,                    // kAudioChannelLabel_ClickTrack
+    c_Lang   = AV_CHAN_NONE,                    // kAudioChannelLabel_ForeignLanguage
 };
 
 enum {
