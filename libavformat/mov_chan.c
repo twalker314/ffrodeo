@@ -518,11 +518,11 @@ static const struct {
     { AV_CHAN_TOP_SURROUND_RIGHT,    61 }, // kAudioChannelLabel_RightTopSurround
     { AV_CHAN_BINAURAL_LEFT,        208 }, // kAudioChannelLabel_BinauralLeft
     { AV_CHAN_BINAURAL_RIGHT,       209 }, // kAudioChannelLabel_BinauralRight
-    /* Ambisonic */
-    { AV_CHAN_UNKNOWN,              200 }, // kAudioChannelLabel_Ambisonic_W
-    { AV_CHAN_UNKNOWN,              201 }, // kAudioChannelLabel_Ambisonic_X
-    { AV_CHAN_UNKNOWN,              202 }, // kAudioChannelLabel_Ambisonic_Y
-    { AV_CHAN_UNKNOWN,              203 }, // kAudioChannelLabel_Ambisonic_Z
+    /* Ambisonic: Furse-Malham (W, Y, Z, X) -> Ambisonic Channel Number (0, 1, 2, 3) */
+    { AV_CHAN_AMBISONIC_BASE,       200 }, // kAudioChannelLabel_Ambisonic_W
+    { AV_CHAN_AMBISONIC_BASE + 1,   202 }, // kAudioChannelLabel_Ambisonic_Y
+    { AV_CHAN_AMBISONIC_BASE + 2,   203 }, // kAudioChannelLabel_Ambisonic_Z
+    { AV_CHAN_AMBISONIC_BASE + 3,   201 }, // kAudioChannelLabel_Ambisonic_X
     /* The following have no exact counterparts */
     { AV_CHAN_UNKNOWN,               40 }, // kAudioChannelLabel_HearingImpaired
     { AV_CHAN_UNKNOWN,               41 }, // kAudioChannelLabel_Narration
