@@ -42,7 +42,9 @@ done
 	do
 		multichannel=1
 		test "${i[-9,-1]}" = "MONO.FLAC" && multichannel=0
+		test "${i[-12,-5]}" = "Binaural" && multichannel=0
 		test "${i[-11,-1]}" = "STEREO.FLAC" && multichannel=0
+		test "${i[-16,-5]}" = "MatrixStereo" && multichannel=0
 		afinfoa=$(afinfo "${dstdirec}/${i:t}-ffmpeg.aif" | grep -o -e "Channel layout: .*" -e "no channel layout.")
 		afinfoc=$(afinfo "${dstdirec}/${i:t}-ffmpeg.caf" | grep -o -e "Channel layout: .*" -e "no channel layout.")
 		afinfom=$(afinfo "${dstdirec}/${i:t}-ffmpeg.mov" | grep -o -e "Channel layout: .*" -e "no channel layout.")
