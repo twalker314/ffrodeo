@@ -93,6 +93,7 @@ enum {
     c_Rts    = AV_CHAN_TOP_SURROUND_RIGHT,      // kAudioChannelLabel_RightTopSurround
     c_Bil    = AV_CHAN_BINAURAL_LEFT,           // kAudioChannelLabel_BinauralLeft
     c_Bir    = AV_CHAN_BINAURAL_RIGHT,          // kAudioChannelLabel_BinauralRight
+    /* Ambisonic: Furse-Malham (W, Y, Z, X) -> Ambisonic Channel Number (0, 1, 2, 3) */
     c_W      = AV_CHAN_AMBISONIC_BASE,          // kAudioChannelLabel_Ambisonic_W
     c_Y      = AV_CHAN_AMBISONIC_BASE + 1,      // kAudioChannelLabel_Ambisonic_Y
     c_Z      = AV_CHAN_AMBISONIC_BASE + 2,      // kAudioChannelLabel_Ambisonic_Z
