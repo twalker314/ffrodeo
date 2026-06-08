@@ -16,23 +16,23 @@ do
 	"${builddir}/ffmpeg" -v error -i "$i" -c pcm_s16be \
 		-f aiff -y "${dstdirec}/${i:t}-ffmpeg.aif"    ||
 	{
-		local return="${?}"
+		lastexitstatus="${?}"
 		echo "Error: ${i:t}-ffmpeg.aif" 1>&2
-		return "${return}"
+		return "${lastexitstatus}"
 	}
 	"${builddir}/ffmpeg" -v error -i "$i" -c pcm_s16le \
 		-f caf -y "${dstdirec}/${i:t}-ffmpeg.caf"     ||
 	{
-		local return="${?}"
+		lastexitstatus="${?}"
 		echo "Error: ${i:t}-ffmpeg.caf" 1>&2
-		return "${return}"
+		return "${lastexitstatus}"
 	}
 	"${builddir}/ffmpeg" -v error -i "$i" -c pcm_s16le \
 		-f mov -y "${dstdirec}/${i:t}-ffmpeg.mov"     ||
 	{
-		local return="${?}"
+		lastexitstatus="${?}"
 		echo "Error: ${i:t}-ffmpeg.mov" 1>&2
-		return "${return}"
+		return "${lastexitstatus}"
 	}
 done
 {
@@ -46,10 +46,10 @@ done
 		afinfoa=$(afinfo "${dstdirec}/${i:t}-ffmpeg.aif" | grep -o -e "Channel layout: .*" -e "no channel layout.")
 		afinfoc=$(afinfo "${dstdirec}/${i:t}-ffmpeg.caf" | grep -o -e "Channel layout: .*" -e "no channel layout.")
 		afinfom=$(afinfo "${dstdirec}/${i:t}-ffmpeg.mov" | grep -o -e "Channel layout: .*" -e "no channel layout.")
-		srcinfo=$("${builddir}/ffprobe" -i "${i}"                           2>&1 | grep -o "[[:digit:]]*0 Hz.*s16")
-		aifinfo=$("${builddir}/ffprobe" -i "${dstdirec}/${i:t}-ffmpeg.aif"  2>&1 | grep -o "[[:digit:]]*0 Hz.*s16")
-		cafinfo=$("${builddir}/ffprobe" -i "${dstdirec}/${i:t}-ffmpeg.caf"  2>&1 | grep -o "[[:digit:]]*0 Hz.*s16")
-		movinfo=$("${builddir}/ffprobe" -i "${dstdirec}/${i:t}-ffmpeg.mov"  2>&1 | grep -o "[[:digit:]]*0 Hz.*s16")
+		srcinfo=$("${builddir}/ffprobe" -v error -show_entries stream=channel_layout -of default=nk=1:nw=1 -i "${i}")
+		aifinfo=$("${builddir}/ffprobe" -v error -show_entries stream=channel_layout -of default=nk=1:nw=1 -i "${dstdirec}/${i:t}-ffmpeg.aif")
+		cafinfo=$("${builddir}/ffprobe" -v error -show_entries stream=channel_layout -of default=nk=1:nw=1 -i "${dstdirec}/${i:t}-ffmpeg.caf")
+		movinfo=$("${builddir}/ffprobe" -v error -show_entries stream=channel_layout -of default=nk=1:nw=1 -i "${dstdirec}/${i:t}-ffmpeg.mov")
 		test 0 -ne "${multichannel}" &&
 		{
 			test "${afinfoa}" != "${afinfoc}" && { echo "Error: ${i:t}-ffmpeg.aif ${afinfoa} != ${afinfoc}"; return 1; }
@@ -60,19 +60,19 @@ done
 		test "${srcinfo}" != "${movinfo}" && { echo "Error: ${i:t}-ffmpeg.mov ${srcinfo} != ${movinfo}"; return 1; }
 		printf "${decorate}\n"
 		printf "%s\n" "${i:t}"
-		printf "Source:       %s\n" "${srcinfo}"
+		printf "ffprobe(src): Channel layout: %s\n" "${srcinfo}"
 		test 0 -ne "${multichannel}" &&
 		{
 			## ffmpeg doesn't write CHAN for AIFF <= 2 channels
 			## ffprobe will not see channel layout in this case
-			printf "ffprobe(aif): %s\n" "${aifinfo}"
+			printf "ffprobe(aif): Channel layout: %s\n" "${aifinfo}"
 		}
-		printf "ffprobe(caf): %s\n" "${cafinfo}"
-		printf "ffprobe(mov): %s\n" "${movinfo}"
+		printf "ffprobe(caf): Channel layout: %s\n" "${cafinfo}"
+		printf "ffprobe(mov): Channel layout: %s\n" "${movinfo}"
 		test 0 -ne "${multichannel}" &&
 		{
 			## ffmpeg doesn't write CHAN for AIFF <= 2 channels
-			## afinfo will not see layout for AIFF without chan
+			## afinfo will not see layout for AIFF without CHAN
 			printf "afinfo (aif): %s\n" "${afinfoa}"
 		}
 		printf "afinfo (caf): %s\n" "${afinfoc}"
