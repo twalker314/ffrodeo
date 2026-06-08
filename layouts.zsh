@@ -13,25 +13,22 @@ done
 make -C  "${builddir}"
 for i in "${srcdirec}"/*.*
 do
-	"${builddir}/ffmpeg" -i "$i" -c pcm_s16be -f aiff \
-		-y "${dstdirec}/${i:t}-ffmpeg.aif"            \
-		2> "${dstdirec}/${i:t}-ffmpeg.aif.log.txt"   ||
+	"${builddir}/ffmpeg" -v error -i "$i" -c pcm_s16be \
+		-f aiff -y "${dstdirec}/${i:t}-ffmpeg.aif"    ||
 	{
 		local return="${?}"
 		echo "Error: ${i:t}-ffmpeg.aif" 1>&2
 		return "${return}"
 	}
-	"${builddir}/ffmpeg" -i "$i" -c pcm_s16le -f caf  \
-		-y "${dstdirec}/${i:t}-ffmpeg.caf"            \
-		2> "${dstdirec}/${i:t}-ffmpeg.caf.log.txt"   ||
+	"${builddir}/ffmpeg" -v error -i "$i" -c pcm_s16le \
+		-f caf -y "${dstdirec}/${i:t}-ffmpeg.caf"     ||
 	{
 		local return="${?}"
 		echo "Error: ${i:t}-ffmpeg.caf" 1>&2
 		return "${return}"
 	}
-	"${builddir}/ffmpeg" -i "$i" -c pcm_s16le -f mov  \
-		-y "${dstdirec}/${i:t}-ffmpeg.mov"            \
-		2> "${dstdirec}/${i:t}-ffmpeg.mov.log.txt"   ||
+	"${builddir}/ffmpeg" -v error -i "$i" -c pcm_s16le \
+		-f mov -y "${dstdirec}/${i:t}-ffmpeg.mov"     ||
 	{
 		local return="${?}"
 		echo "Error: ${i:t}-ffmpeg.mov" 1>&2
