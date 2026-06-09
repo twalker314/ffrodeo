@@ -33,11 +33,11 @@
 #include "mov_chan.h"
 
 /*
- * Notes about WAVE to kAudioChannelLabel mapping.
+ * Notes about kAudioChannelLabel mapping.
  *
- * When reading a CAF/AIFF/MOV file with:
+ * When reading an AIFF, CAF or MOV file with:
  *  - kAudioChannelLayoutTag_UseChannelBitmap
- *  - mChannelBitmap 0x3ffff (all kAudioChannelBits set)
+ *  - mChannelBitmap 0x3ffff (18 first kAudioChannelBit values set)
  * afinfo reports:
  * Channel layout: 17.1 (L R C LFE Ls Rs Lc Rc Cs Lsd Rsd Ts Vhl Vhc Vhr Tbl Tbc Tbr)
  * back left/right mapped to kAudioChannelLabel_LeftSurround/RightSurround
@@ -59,8 +59,6 @@ enum {
     c_R      = AV_CHAN_FRONT_RIGHT,             // kAudioChannelLabel_Right
     c_C      = AV_CHAN_FRONT_CENTER,            // kAudioChannelLabel_Center
     c_LFE    = AV_CHAN_LOW_FREQUENCY,           // kAudioChannelLabel_LFEScreen
-    /* no kAudioChannelLabel_LFE1; LFE1 label only used in comments (CoreAudioBaseTypes.h) */
-    c_LFE1   = AV_CHAN_LOW_FREQUENCY,           // kAudioChannelLabel_LFEScreen
     c_Rls    = AV_CHAN_BACK_LEFT,               // kAudioChannelLabel_RearSurroundLeft
     c_Rrs    = AV_CHAN_BACK_RIGHT,              // kAudioChannelLabel_RearSurroundRight
     c_Lc     = AV_CHAN_FRONT_LEFT_OF_CENTER,    // kAudioChannelLabel_LeftCenter
@@ -194,7 +192,7 @@ struct MovChannelLayoutMap {
     CHLIST01( MOV_CH_LAYOUT_MONO,                 C    )\
     CHLIST02( MOV_CH_LAYOUT_STEREO,               L,   R    )\
     CHLIST02( MOV_CH_LAYOUT_STEREOHEADPHONES,     L,   R    )\
-    CHLIST02( MOV_CH_LAYOUT_BINAURAL,             L,   R    )\
+    CHLIST02( MOV_CH_LAYOUT_BINAURAL,             Bil, Bir  )\
     CHLIST02( MOV_CH_LAYOUT_MIDSIDE,              L,   R    )\
     CHLIST02( MOV_CH_LAYOUT_XY,                   L,   R    )\
     CHLIST02( MOV_CH_LAYOUT_MATRIXSTEREO,         Lt,  Rt   )\
@@ -277,8 +275,8 @@ struct MovChannelLayoutMap {
     CHLIST08( MOV_CH_LAYOUT_CICP_14,              L,   R,   C,    LFE,  Ls,   Rs,    Vhl,  Vhr   )\
     CHLIST09( MOV_CH_LAYOUT_DTS_8_1_A,            Lc,  Rc,  L,    R,    Ls,   Rs,    Rls,  Rrs,  LFE   )\
     CHLIST09( MOV_CH_LAYOUT_DTS_8_1_B,            Lc,  C,   Rc,   L,    R,    Ls,    Cs,   Rs,   LFE   )\
-    CHLIST16( MOV_CH_LAYOUT_TMH_10_2_STD,         L,   R,   C,    Vhc,  Lsd,  Rsd,   Ls,   Rs,   Vhl,  Vhr,  Lw,  Rw,  Csd,  Cs,  LFE1,  LFE2  )\
-    CHLIST21( MOV_CH_LAYOUT_TMH_10_2_FULL,        L,   R,   C,    Vhc,  Lsd,  Rsd,   Ls,   Rs,   Vhl,  Vhr,  Lw,  Rw,  Csd,  Cs,  LFE1,  LFE2,  Lc,  Rc,  HI,  VI,  Haptic  )\
+    CHLIST16( MOV_CH_LAYOUT_TMH_10_2_STD,         L,   R,   C,    Vhc,  Lsd,  Rsd,   Ls,   Rs,   Vhl,  Vhr,  Lw,  Rw,  Csd,  Cs,  LFE,  LFE2  )\
+    CHLIST21( MOV_CH_LAYOUT_TMH_10_2_FULL,        L,   R,   C,    Vhc,  Lsd,  Rsd,   Ls,   Rs,   Vhl,  Vhr,  Lw,  Rw,  Csd,  Cs,  LFE,  LFE2,  Lc,  Rc,  HI,  VI,  Haptic  )\
 
 #define CHLIST(_tag, _cnt, ...)    static_assert((_tag & 0xffff) == _cnt, "Channel count of " #_tag " is not " #_cnt);
 MOV_CH_LAYOUT_MAP
@@ -372,6 +370,7 @@ static const enum MovChannelLayoutTag mov_ch_layouts_alac[] = {
 static const enum MovChannelLayoutTag mov_ch_layouts_wav[] = {
     MOV_CH_LAYOUT_MONO,         // AV_CHANNEL_LAYOUT_MONO                   C
     MOV_CH_LAYOUT_STEREO,       // AV_CHANNEL_LAYOUT_STEREO                 L R
+    MOV_CH_LAYOUT_BINAURAL,     // AV_CHANNEL_LAYOUT_BINAURAL               Bil Bir
     MOV_CH_LAYOUT_MATRIXSTEREO, // AV_CHANNEL_LAYOUT_STEREO_DOWNMIX         Lt Rt
     MOV_CH_LAYOUT_DVD_4,        // AV_CHANNEL_LAYOUT_2POINT1                L R LFE
     MOV_CH_LAYOUT_ITU_2_1,      // AV_CHANNEL_LAYOUT_2_1                    L R Cs
